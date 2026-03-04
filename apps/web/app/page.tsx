@@ -1,5 +1,10 @@
 import { HeroDemo } from "./hero-demo";
 import { AutoHingeDemo } from "./auto-hinge-demo";
+import { ProfileCardsDemo } from "./profile-cards-demo";
+import { NotchPositionsDemo } from "./notch-positions-demo";
+import { HingeSidesDemo } from "./hinge-sides-demo";
+import { RecipeCardsDemo } from "./recipe-cards-demo";
+import { SpringConfigDemo } from "./spring-config-demo";
 import { CodeBlock } from "./code-block";
 
 const INSTALL_CODE = `npm install @markoradak/folder-card framer-motion`;
@@ -51,6 +56,41 @@ const TAB_EXAMPLE = `<FolderCard
     </div>
   )}
 />`;
+
+const SPRING_EXAMPLE = `<FolderCardGroup
+  springConfig={{ stiffness: 200, damping: 15 }}
+>
+  <FolderCard
+    id="bouncy-card"
+    renderLid={() => <CardFace />}
+    renderDetail={(close) => <CardDetail close={close} />}
+  />
+</FolderCardGroup>`;
+
+const HINGE_NOTCH_EXAMPLE = `<FolderCard
+  id="recipe-card"
+  hingeSide="left"
+  notchPosition="bottom-right"
+  renderLid={() => <RecipeFace />}
+  renderDetail={(close) => <RecipeDetail close={close} />}
+  renderTab={() => <TabIcon />}
+/>`;
+
+const THEMING_EXAMPLE = `:root {
+  --fc-radius: 20px;
+  --fc-card-bg: #ffffff;
+  --fc-foreground: #0a0a0a;
+  --fc-border: rgba(0, 0, 0, 0.1);
+  --fc-muted: rgba(0, 0, 0, 0.45);
+  --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.dark {
+  --fc-card-bg: #1a1a1f;
+  --fc-foreground: #ffffff;
+  --fc-border: rgba(255, 255, 255, 0.08);
+}`;
 
 const FEATURES = [
   {
@@ -214,6 +254,21 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Profile Cards */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Built for any use case
+            </h2>
+            <p className="mt-3 text-muted">
+              Team profiles with <code className="rounded-md border border-border/40 bg-card px-1.5 py-0.5 text-xs font-medium text-foreground dark:border-white/[0.08]">notchPosition=&quot;top-left&quot;</code> for a different tab placement.
+            </p>
+          </div>
+          <ProfileCardsDemo />
+        </div>
+      </section>
+
       {/* Auto Hinge Demo */}
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -226,6 +281,66 @@ export default function Home() {
             </p>
           </div>
           <AutoHingeDemo />
+        </div>
+      </section>
+
+      {/* Notch Positions */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              8 notch positions
+            </h2>
+            <p className="mt-3 text-muted">
+              Place the folder tab at any corner or edge. Select a position to see the notch move.
+            </p>
+          </div>
+          <NotchPositionsDemo />
+        </div>
+      </section>
+
+      {/* Hinge Sides Live */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Hinge sides
+            </h2>
+            <p className="mt-3 text-muted">
+              Four directions for lid rotation. Click each card to see it in action.
+            </p>
+          </div>
+          <HingeSidesDemo />
+        </div>
+      </section>
+
+      {/* Recipe Cards */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Content cards
+            </h2>
+            <p className="mt-3 text-muted">
+              Editorial layouts with <code className="rounded-md border border-border/40 bg-card px-1.5 py-0.5 text-xs font-medium text-foreground dark:border-white/[0.08]">hingeSide=&quot;left&quot;</code> and <code className="rounded-md border border-border/40 bg-card px-1.5 py-0.5 text-xs font-medium text-foreground dark:border-white/[0.08]">notchPosition=&quot;bottom-right&quot;</code>.
+            </p>
+          </div>
+          <RecipeCardsDemo />
+        </div>
+      </section>
+
+      {/* Spring Config */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Tune the physics
+            </h2>
+            <p className="mt-3 text-muted">
+              Each card uses a different spring configuration. Click to feel the difference.
+            </p>
+          </div>
+          <SpringConfigDemo />
         </div>
       </section>
 
@@ -263,48 +378,39 @@ export default function Home() {
               </p>
               <CodeBlock code={TAB_EXAMPLE} />
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Hinge Sides */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Hinge sides
-            </h2>
-            <p className="mt-3 text-muted">
-              Four directions for lid rotation, each with tuned rest, hover, and open angles.
-            </p>
-          </div>
+            <div>
+              <h3 className="mb-4 text-base font-semibold text-foreground">
+                Custom spring
+              </h3>
+              <p className="mb-4 text-sm text-muted">
+                Pass springConfig to FolderCardGroup for bouncy, smooth, or
+                snappy animations. Adjust stiffness and damping.
+              </p>
+              <CodeBlock code={SPRING_EXAMPLE} />
+            </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {(
-              [
-                { side: "bottom", axis: "rotateX", rest: "-20", open: "-100", arrow: "↕" },
-                { side: "top", axis: "rotateX", rest: "20", open: "100", arrow: "↕" },
-                { side: "left", axis: "rotateY", rest: "-15", open: "-120", arrow: "↔" },
-                { side: "right", axis: "rotateY", rest: "15", open: "120", arrow: "↔" },
-              ] as const
-            ).map((item) => (
-              <div
-                key={item.side}
-                className="overflow-hidden rounded-[20px] border border-border/40 bg-card dark:border-white/[0.06]"
-              >
-                <div className="flex h-28 items-center justify-center bg-foreground/[0.02] dark:bg-white/[0.02]">
-                  <span className="text-3xl text-muted/30">{item.arrow}</span>
-                </div>
-                <div className="p-4">
-                  <p className="text-sm font-semibold capitalize text-foreground">
-                    {item.side}
-                  </p>
-                  <p className="mt-0.5 font-mono text-xs text-muted">
-                    {item.axis}: {item.rest}&deg; &rarr; {item.open}&deg;
-                  </p>
-                </div>
-              </div>
-            ))}
+            <div>
+              <h3 className="mb-4 text-base font-semibold text-foreground">
+                Hinge side + notch position
+              </h3>
+              <p className="mb-4 text-sm text-muted">
+                Combine hingeSide and notchPosition for unique card orientations.
+                The tab cutout and lid rotation work together.
+              </p>
+              <CodeBlock code={HINGE_NOTCH_EXAMPLE} />
+            </div>
+
+            <div className="lg:col-span-2">
+              <h3 className="mb-4 text-base font-semibold text-foreground">
+                CSS variable theming
+              </h3>
+              <p className="mb-4 text-sm text-muted">
+                Override --fc-* CSS custom properties for colors, radii, shadows,
+                and transitions. Supports light and dark mode.
+              </p>
+              <CodeBlock code={THEMING_EXAMPLE} language="css" />
+            </div>
           </div>
         </div>
       </section>
