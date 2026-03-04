@@ -64,6 +64,8 @@
   position: fixed;
   inset: 0;
   background: var(--fc-backdrop-bg);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 [data-fc-dialog] {

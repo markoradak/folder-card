@@ -256,7 +256,7 @@ export function FolderCardExpanded({
       {/* Backdrop: fades in/out independently */}
       <motion.div
         data-fc-backdrop=""
-        className={cn('fixed inset-0 z-40 bg-black/50', backdropClassName)}
+        className={cn('fixed inset-0 z-40 bg-black/50 backdrop-blur-sm', backdropClassName)}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
