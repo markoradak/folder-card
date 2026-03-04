@@ -6,7 +6,7 @@ import {
   FolderCard,
   FolderCardItem,
 } from "@markoradak/folder-card";
-import type { NotchPosition } from "@markoradak/folder-card";
+import type { NotchPosition, HingeSideProp } from "@markoradak/folder-card";
 
 const POSITIONS: NotchPosition[] = [
   "top-left",
@@ -41,18 +41,64 @@ const POSITION_SHORT: Record<NotchPosition, string> = {
   left: "L",
 };
 
-// Padding classes for the card content to avoid overlapping with the tab
-// based on which side the tab is positioned on.
-function getContentPadding(pos: NotchPosition): string {
-  if (pos === "left") return "pl-14";
-  if (pos === "right") return "pr-14";
-  if (pos === "top" || pos === "top-left" || pos === "top-right") return "pt-14";
-  if (pos === "bottom" || pos === "bottom-left" || pos === "bottom-right") return "pb-14";
-  return "";
+// Hinge on the opposite side of the notch so the lid opens away from the tab.
+const OPPOSITE_HINGE: Record<NotchPosition, HingeSideProp> = {
+  "top-left": "bottom",
+  top: "bottom",
+  "top-right": "bottom",
+  right: "left",
+  "bottom-right": "top",
+  bottom: "top",
+  "bottom-left": "top",
+  left: "right",
+};
+
+// Content alignment opposite to the notch so it gravitates away from the tab.
+// Returns Tailwind classes for the outer wrapper (flex direction + alignment).
+function getContentAlignment(pos: NotchPosition): string {
+  switch (pos) {
+    case "top-left":
+      return "items-end justify-end text-right";
+    case "top":
+      return "items-center justify-end text-center";
+    case "top-right":
+      return "items-start justify-end text-left";
+    case "right":
+      return "items-start justify-center text-left";
+    case "bottom-right":
+      return "items-start justify-start text-left";
+    case "bottom":
+      return "items-center justify-start text-center";
+    case "bottom-left":
+      return "items-end justify-start text-right";
+    case "left":
+      return "items-end justify-center text-right";
+  }
 }
 
-// Tab padding: push the tab inward so it has clear visual separation.
-// For side tabs (left/right) we need vertical padding; for top/bottom we need horizontal.
+// Padding to avoid overlapping with the tab, per notch position.
+function getContentPadding(pos: NotchPosition): string {
+  switch (pos) {
+    case "top-left":
+      return "pt-14 pl-10";
+    case "top":
+      return "pt-14";
+    case "top-right":
+      return "pt-14 pr-10";
+    case "right":
+      return "pr-14";
+    case "bottom-right":
+      return "pb-14 pr-10";
+    case "bottom":
+      return "pb-14";
+    case "bottom-left":
+      return "pb-14 pl-10";
+    case "left":
+      return "pl-14";
+  }
+}
+
+// Tab padding per position.
 function getTabPadding(pos: NotchPosition): string {
   switch (pos) {
     case "top-left":
@@ -89,7 +135,7 @@ export function NotchPositionsDemo() {
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                 pos === position
                   ? "bg-foreground text-background"
-                  : "border border-border/40 text-muted hover:text-foreground dark:border-white/[0.08]"
+                  : "border border-border/40 text-muted hover:text-foreground dark:border-white/8"
               }`}
             >
               {POSITION_LABELS[pos]}
@@ -105,55 +151,38 @@ export function NotchPositionsDemo() {
               id="notch-demo"
               liveRadius
               notchPosition={position}
+              hingeSide={OPPOSITE_HINGE[position]}
               renderLid={() => (
-                <div className={`flex flex-col gap-4 p-6 ${getContentPadding(position)}`}>
+                <div
+                  className={`flex flex-col gap-4 p-6 ${getContentPadding(position)} ${getContentAlignment(position)}`}
+                >
                   <FolderCardItem>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-bold"
-                        style={{
-                          backgroundColor: "color-mix(in srgb, #F59E0B 20%, var(--color-card))",
-                          boxShadow: "0 0 0 2px #F59E0B50",
-                          color: "#F59E0B",
-                        }}
-                      >
-                        {POSITION_SHORT[position]}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground">
-                          Notch Position
-                        </p>
-                        <p className="text-xs text-muted">
-                          {POSITION_LABELS[position]}
-                        </p>
-                      </div>
+                    <div
+                      className="flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+                      style={{
+                        backgroundColor: "color-mix(in srgb, #F59E0B 20%, var(--color-card))",
+                        boxShadow: "0 0 0 2px #F59E0B50",
+                        color: "#F59E0B",
+                      }}
+                    >
+                      {POSITION_SHORT[position]}
                     </div>
                   </FolderCardItem>
 
                   <FolderCardItem>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <p className="text-[11px] text-muted/60">Position</p>
-                        <p className="text-sm font-semibold text-foreground">{position}</p>
-                      </div>
-                      <div>
-                        <p className="text-[11px] text-muted/60">Type</p>
-                        <p className="text-sm font-semibold text-foreground">
-                          {position.includes("-") ? "Corner" : "Edge"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[11px] text-muted/60">Index</p>
-                        <p className="text-sm font-semibold tabular-nums text-foreground">
-                          {POSITIONS.indexOf(position) + 1}/8
-                        </p>
-                      </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">
+                        {POSITION_LABELS[position]}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {position.includes("-") ? "Corner notch" : "Edge notch"}
+                      </p>
                     </div>
                   </FolderCardItem>
 
                   <FolderCardItem>
-                    <div className="rounded-[12px] border border-border/40 bg-foreground/[0.02] p-3 dark:border-white/[0.06] dark:bg-white/[0.02]">
-                      <p className="text-center font-mono text-xs text-muted">
+                    <div className="rounded-xl border border-border/40 bg-foreground/2 p-3 dark:border-white/6 dark:bg-white/2">
+                      <p className="font-mono text-xs text-muted">
                         notchPosition=&quot;{position}&quot;
                       </p>
                     </div>
@@ -165,7 +194,7 @@ export function NotchPositionsDemo() {
                   <button
                     type="button"
                     onClick={close}
-                    className="absolute right-2 top-2 z-10 flex size-9 items-center justify-center rounded-full border border-border/40 text-muted transition-colors hover:text-foreground dark:border-white/[0.08]"
+                    className="absolute right-2 top-2 z-10 flex size-9 items-center justify-center rounded-full border border-border/40 text-muted transition-colors hover:text-foreground dark:border-white/8"
                     aria-label="Close"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -180,13 +209,16 @@ export function NotchPositionsDemo() {
                   </FolderCardItem>
                   <FolderCardItem>
                     <p className="text-sm text-muted">
-                      The tab cutout is positioned at the <strong className="text-foreground">{position}</strong> edge of the card. Use the selector above to try all 8 positions.
+                      The tab is at <strong className="text-foreground">{position}</strong> and the lid hinges from the <strong className="text-foreground">{OPPOSITE_HINGE[position]}</strong>, opening away from the tab.
                     </p>
                   </FolderCardItem>
                   <FolderCardItem>
-                    <div className="rounded-[12px] border border-border/40 bg-foreground/[0.02] p-4 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                    <div className="rounded-xl border border-border/40 bg-foreground/2 p-4 dark:border-white/6 dark:bg-white/2">
                       <p className="font-mono text-xs text-muted">
-                        &lt;FolderCard notchPosition=&quot;{position}&quot; /&gt;
+                        &lt;FolderCard<br />
+                        &nbsp;&nbsp;notchPosition=&quot;{position}&quot;<br />
+                        &nbsp;&nbsp;hingeSide=&quot;{OPPOSITE_HINGE[position]}&quot;<br />
+                        /&gt;
                       </p>
                     </div>
                   </FolderCardItem>
@@ -194,7 +226,7 @@ export function NotchPositionsDemo() {
               )}
               renderTab={() => (
                 <div className={getTabPadding(position)}>
-                  <div className="flex items-center justify-center rounded-full border border-border/40 px-3 py-1.5 text-xs font-medium text-muted transition-all duration-300 ease-out group-hover:border-foreground/30 group-hover:text-foreground dark:border-white/[0.1] dark:group-hover:border-white/[0.2]">
+                  <div className="flex items-center justify-center rounded-full border border-border/40 px-3 py-1.5 text-xs font-medium text-muted transition-all duration-300 ease-out group-hover:border-foreground/30 group-hover:text-foreground dark:border-white/10 dark:group-hover:border-white/20">
                     {POSITION_SHORT[position]}
                   </div>
                 </div>

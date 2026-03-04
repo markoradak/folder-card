@@ -44,7 +44,7 @@ const RECIPES = [
 
 function CardFace({ recipe }: { recipe: (typeof RECIPES)[number] }) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-hidden rounded-(--fc-radius,1rem)">
       <FolderCardItem>
         <div
           className={`flex h-24 items-center justify-center bg-gradient-to-br ${recipe.gradient}`}
