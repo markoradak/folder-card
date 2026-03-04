@@ -1,0 +1,17 @@
+export const DEFAULT_SPRING_STIFFNESS = 350
+export const DEFAULT_SPRING_DAMPING = 35
+
+export const DEFAULT_SPRING_CONFIG = {
+  type: 'spring' as const,
+  stiffness: DEFAULT_SPRING_STIFFNESS,
+  damping: DEFAULT_SPRING_DAMPING,
+}
+
+export const DEFAULT_DIALOG_VIEWPORT_PADDING = 32
+export const DEFAULT_CONTENT_REVEAL_DELAY = 200
+export const DEFAULT_OPEN_ROTATE_X = -100
+export const DEFAULT_HOVER_ROTATE_X = -30
+export const DEFAULT_REST_ROTATE_X = -20
+export const DEFAULT_PERSPECTIVE = 1800
+export const DEFAULT_BACKDROP_DURATION = 0.25
+export const DEFAULT_EXIT_DURATION = 0.15

@@ -1,0 +1,76 @@
+/*
+ * folder-card/styles
+ *
+ * Import this file if your project does NOT use Tailwind CSS.
+ * Defines CSS variable defaults and [data-fc-*] structural rules.
+ *
+ * Tailwind users: skip this file -- the components use standard Tailwind classes.
+ * Override any variable in :root (or a scoped selector) to theme the components.
+ */
+
+:root {
+  --fc-card-bg: #ffffff;
+  --fc-foreground: #0a0a0a;
+  --fc-border: rgba(0, 0, 0, 0.1);
+  --fc-muted: rgba(0, 0, 0, 0.45);
+  --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --fc-radius: 20px;
+  --fc-perspective: 1800px;
+  --fc-backdrop-bg: rgba(0, 0, 0, 0.5);
+  --fc-dialog-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  --fc-focus-ring: rgba(0, 0, 0, 0.2);
+  --fc-tint: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
+  --fc-back-face: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
+  --fc-transition-duration: 300ms;
+  --fc-transition-easing: ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fc-card-bg: #111111;
+    --fc-foreground: #f5f5f5;
+    --fc-border: rgba(255, 255, 255, 0.06);
+    --fc-muted: rgba(255, 255, 255, 0.45);
+    --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+    --fc-focus-ring: rgba(255, 255, 255, 0.2);
+    --fc-tint: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
+    --fc-back-face: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
+  }
+}
+
+[data-fc-card] {
+  position: relative;
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  flex-direction: column;
+  border-radius: var(--fc-radius);
+  text-align: left;
+  background-color: var(--fc-card-bg);
+  border: 1px solid var(--fc-border);
+  box-shadow: var(--fc-shadow-sm);
+  transition-property: translate, box-shadow, border-color;
+  transition-duration: var(--fc-transition-duration);
+  transition-timing-function: var(--fc-transition-easing);
+}
+
+[data-fc-card]:hover {
+  box-shadow: var(--fc-shadow-lg);
+}
+
+[data-fc-backdrop] {
+  position: fixed;
+  inset: 0;
+  background: var(--fc-backdrop-bg);
+}
+
+[data-fc-dialog] {
+  position: fixed;
+  overflow: hidden;
+  border-radius: var(--fc-radius);
+  border: 1px solid var(--fc-border);
+  background-color: var(--fc-card-bg);
+  box-shadow: var(--fc-dialog-shadow);
+}

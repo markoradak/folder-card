@@ -1,0 +1,86 @@
+@import "tailwindcss";
+@import "../../../packages/react/src/styles.css";
+@source "../../../packages/react/src";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: #E0DED7;
+  --color-surface: #F5F3EE;
+  --color-border: #D4D1C9;
+  --color-foreground: #1A1A1A;
+  --color-muted: #6B6860;
+  --color-accent: #DEE841;
+  --color-card: #FFFFFF;
+  --color-primary: #1A1A1A;
+  --color-secondary: #D4D1C9;
+  --color-destructive: #DC2626;
+  --color-warning: #D97706;
+  --color-success: #16A34A;
+  --color-ring: #DEE841;
+}
+
+:root {
+  --fc-radius: 20px;
+  --fc-card-bg: var(--color-card);
+  --fc-foreground: var(--color-foreground);
+  --fc-border: var(--color-border);
+  --fc-muted: var(--color-muted);
+  --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --fc-backdrop-bg: rgba(0, 0, 0, 0.5);
+  --fc-dialog-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  --fc-focus-ring: rgba(0, 0, 0, 0.2);
+  --fc-tint: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));
+  --fc-back-face: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));
+}
+
+.dark {
+  --color-background: #060608;
+  --color-surface: #111114;
+  --color-border: #1E1E22;
+  --color-foreground: #FFFFFF;
+  --color-muted: #71717A;
+  --color-accent: #DEE841;
+  --color-card: #1A1A1F;
+  --color-primary: #FFFFFF;
+  --color-secondary: #1E1E22;
+  --color-destructive: #EF4444;
+  --color-warning: #F59E0B;
+  --color-success: #22C55E;
+  --color-ring: #DEE841;
+
+  --fc-card-bg: var(--color-card);
+  --fc-foreground: var(--color-foreground);
+  --fc-border: var(--color-border);
+  --fc-muted: var(--color-muted);
+  --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --fc-focus-ring: rgba(255, 255, 255, 0.2);
+  --fc-tint: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));
+  --fc-back-face: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(222, 232, 65, 0.25);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
