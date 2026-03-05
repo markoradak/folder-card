@@ -39,7 +39,7 @@ const TEAM = [
     id: "priya",
     name: "Priya Sharma",
     initials: "PS",
-    role: "Product Manager",
+    role: "Marketing",
     tagline: "Turning ideas into roadmaps",
     color: "#10B981",
     bio: "Priya bridges the gap between engineering and business. She has launched 12 products in the SaaS space and specializes in developer tools and B2B platforms.",
