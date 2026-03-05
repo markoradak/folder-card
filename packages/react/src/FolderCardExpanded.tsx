@@ -295,7 +295,8 @@ export function FolderCardExpanded({
             <div
               className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
               style={{
-                backgroundColor: 'var(--fc-tint, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
+                backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
+                border: '1px solid var(--fc-lid-border, transparent)',
                 ...(panelMask ? {
                   maskImage: panelMask,
                   maskSize: '100% 100%',
@@ -333,11 +334,11 @@ export function FolderCardExpanded({
 
           {/* Back face -- gradient visible behind the lid */}
           <div
-            className="absolute inset-0 rounded-(--fc-radius,1rem)"
+            className="absolute inset-0 rounded-(--fc-radius,1rem) backface-hidden"
             style={{
               transform: hinge.backFaceTransform,
               background:
-                `linear-gradient(${hinge.gradientDirection}, var(--fc-back-face, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card))), transparent 50%)`,
+                `var(--fc-lid-back, linear-gradient(${hinge.gradientDirection}, color-mix(in srgb, var(--color-foreground, #0a0a0a) 6%, var(--color-card, #fff)), transparent 50%))`,
             }}
           />
         </motion.div>

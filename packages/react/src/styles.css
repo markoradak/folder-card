@@ -20,8 +20,7 @@
   --fc-backdrop-bg: rgba(0, 0, 0, 0.5);
   --fc-dialog-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
   --fc-focus-ring: rgba(0, 0, 0, 0.2);
-  --fc-tint: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
-  --fc-back-face: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
+  --fc-lid: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
   --fc-transition-duration: 300ms;
   --fc-transition-easing: ease-out;
 }
@@ -35,8 +34,7 @@
     --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
     --fc-focus-ring: rgba(255, 255, 255, 0.2);
-    --fc-tint: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
-    --fc-back-face: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
+    --fc-lid: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
   }
 }
 
