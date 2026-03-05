@@ -45,6 +45,7 @@ interface FolderCardExpandedProps {
   renderDetail: (close: () => void) => ReactNode
   renderTab?: () => ReactNode
   panelMask: string | null
+  notchBorder: string | null
   hingeSide: HingeSide
   notchPosition: NotchPosition
   onClose: () => void
@@ -58,6 +59,7 @@ export function FolderCardExpanded({
   renderDetail,
   renderTab,
   panelMask,
+  notchBorder,
   hingeSide,
   notchPosition,
   onClose,
@@ -296,7 +298,6 @@ export function FolderCardExpanded({
               className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
               style={{
                 backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
-                border: '1px solid var(--fc-lid-border, transparent)',
                 ...(panelMask ? {
                   maskImage: panelMask,
                   maskSize: '100% 100%',
@@ -307,6 +308,23 @@ export function FolderCardExpanded({
                 } : {}),
               }}
             />
+
+            {/* Notch inner-edge border -- stroke-only SVG mask reveals the border color
+                along the curved notch boundary where the lid mask clips the regular border. */}
+            {notchBorder && (
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  backgroundColor: 'var(--fc-lid-border, transparent)',
+                  maskImage: notchBorder,
+                  maskSize: '100% 100%',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskImage: notchBorder,
+                  WebkitMaskSize: '100% 100%',
+                  WebkitMaskRepeat: 'no-repeat',
+                }}
+              />
+            )}
 
             {/* Tab content on expanded lid -- fades out quickly on open, back in on close */}
             {renderTab && (

@@ -27,6 +27,7 @@ interface SelectedCard {
   renderDetail: (close: () => void) => ReactNode
   renderTab?: () => ReactNode
   panelMask: string | null
+  notchBorder: string | null
   hingeSide: HingeSide
   notchPosition: NotchPosition
 }
@@ -42,6 +43,7 @@ interface FolderCardContextValue {
     renderDetail: (close: () => void) => ReactNode,
     renderTab?: () => ReactNode,
     panelMask?: string | null,
+    notchBorder?: string | null,
     hingeSide?: HingeSide,
     notchPosition?: NotchPosition,
   ) => void
@@ -99,6 +101,7 @@ export function FolderCardGroup({
       renderDetail: (close: () => void) => ReactNode,
       renderTab?: () => ReactNode,
       panelMask?: string | null,
+      notchBorder?: string | null,
       hingeSide?: HingeSide,
       notchPosition?: NotchPosition,
     ) => {
@@ -110,6 +113,7 @@ export function FolderCardGroup({
         renderDetail,
         renderTab,
         panelMask: panelMask ?? null,
+        notchBorder: notchBorder ?? null,
         hingeSide: hingeSide ?? 'bottom',
         notchPosition: notchPosition ?? 'top-right',
       })
@@ -141,6 +145,7 @@ export function FolderCardGroup({
             renderDetail={selected.renderDetail}
             renderTab={selected.renderTab}
             panelMask={selected.panelMask}
+            notchBorder={selected.notchBorder}
             hingeSide={selected.hingeSide}
             notchPosition={selected.notchPosition}
             onClose={close}

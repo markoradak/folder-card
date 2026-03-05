@@ -22,48 +22,31 @@ function clampRadii(cr: number, ir: number, maxSum: number): [number, number] {
   return [Math.floor(cr * scale), Math.floor(ir * scale)]
 }
 
-/**
- * Build an SVG data-URI mask with an L-shaped or U-shaped cutout for the tab notch.
- * Uses the card's actual pixel dimensions as the SVG viewBox so coordinates
- * map 1:1 -- no stretching distortion.
- */
-export function buildPanelMask(params: PanelMaskParams): string {
-  const { notchPosition = 'top-right' } = params
-
-  switch (notchPosition) {
-    case 'top-right':
-    case 'top-left':
-    case 'bottom-right':
-    case 'bottom-left':
-      return buildCornerMask(params, notchPosition)
-    case 'top':
-    case 'right':
-    case 'bottom':
-    case 'left':
-      return buildEdgeCenterMask(params, notchPosition)
-  }
-}
+// ── SVG serialisation ──────────────────────────────────────────────────
 
 function toSvgDataUri(W: number, H: number, d: string): string {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path d="${d}" fill="white"/></svg>`
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
 }
 
-/**
- * L-shaped corner mask. The cutout sits in the specified corner.
- */
-function buildCornerMask(
+function toStrokeSvgDataUri(W: number, H: number, d: string, strokeWidth = 1): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="white" stroke-width="${strokeWidth}"/></svg>`
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
+}
+
+// ── Shared path builders ───────────────────────────────────────────────
+
+interface PathResult { W: number; H: number; d: string }
+
+function buildCornerPath(
   { cardWidth: W, cardHeight: H, tabWidth: tw, tabHeight: th, concaveRadius = 20, invertedRadius = 14 }: PanelMaskParams,
   corner: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left',
-): string {
-  // cr + ir must fit within both tab width and tab height
+): PathResult {
   const [cr, ir] = clampRadii(concaveRadius, invertedRadius, Math.min(tw, th))
-
   let d: string
 
   switch (corner) {
     case 'top-right': {
-      // Notch at top-right: left edge = W-tw, bottom edge = th
       const nx = W - tw
       const ny = th
       d = [
@@ -81,7 +64,6 @@ function buildCornerMask(
       break
     }
     case 'top-left': {
-      // Notch at top-left: right edge = tw, bottom edge = th
       const nx = tw
       const ny = th
       d = [
@@ -99,7 +81,6 @@ function buildCornerMask(
       break
     }
     case 'bottom-right': {
-      // Notch at bottom-right: left edge = W-tw, top edge = H-th
       const nx = W - tw
       const ny = H - th
       d = [
@@ -117,7 +98,6 @@ function buildCornerMask(
       break
     }
     case 'bottom-left': {
-      // Notch at bottom-left: right edge = tw, top edge = H-th
       const nx = tw
       const ny = H - th
       d = [
@@ -136,34 +116,26 @@ function buildCornerMask(
     }
   }
 
-  return toSvgDataUri(W, H, d)
+  return { W, H, d }
 }
 
-/**
- * U-shaped edge-center mask. A rectangular indentation centered along the specified edge,
- * with inverted arcs at the outer corners and concave arcs at the inner corners.
- */
-function buildEdgeCenterMask(
+function buildEdgeCenterPath(
   { cardWidth: W, cardHeight: H, tabWidth: tw, tabHeight: th, concaveRadius = 20, invertedRadius = 14 }: PanelMaskParams,
   edge: 'top' | 'right' | 'bottom' | 'left',
-): string {
-  // For top/bottom: depth = th, concave must fit within half the tab width
-  // For left/right: depth = tw, concave must fit within half the tab height
+): PathResult {
   const isHorizontal = edge === 'top' || edge === 'bottom'
   const depth = isHorizontal ? th : tw
   const span = isHorizontal ? tw : th
   let [cr, ir] = clampRadii(concaveRadius, invertedRadius, depth)
-  // Each concave arc sweeps inward from both sides, so cr can't exceed half the span
   cr = Math.min(cr, Math.floor(span / 2))
 
   let d: string
 
   switch (edge) {
     case 'top': {
-      // Centered along top edge; tab dimensions: width=tw, depth=th
-      const x1 = (W - tw) / 2 // left edge of notch
-      const x2 = x1 + tw       // right edge of notch
-      const ny = th             // bottom edge of notch
+      const x1 = (W - tw) / 2
+      const x2 = x1 + tw
+      const ny = th
       d = [
         `M 0,0`,
         `H ${x1 - ir}`,
@@ -182,10 +154,9 @@ function buildEdgeCenterMask(
       break
     }
     case 'bottom': {
-      // Centered along bottom edge
       const x1 = (W - tw) / 2
       const x2 = x1 + tw
-      const ny = H - th // top edge of notch
+      const ny = H - th
       d = [
         `M 0,0`,
         `H ${W}`,
@@ -204,10 +175,9 @@ function buildEdgeCenterMask(
       break
     }
     case 'right': {
-      // Centered along right edge; tab dimensions: depth=tw, height=th
-      const y1 = (H - th) / 2 // top edge of notch
-      const y2 = y1 + th       // bottom edge of notch
-      const nx = W - tw         // left edge of notch
+      const y1 = (H - th) / 2
+      const y2 = y1 + th
+      const nx = W - tw
       d = [
         `M 0,0`,
         `H ${W}`,
@@ -226,10 +196,9 @@ function buildEdgeCenterMask(
       break
     }
     case 'left': {
-      // Centered along left edge
       const y1 = (H - th) / 2
       const y2 = y1 + th
-      const nx = tw // right edge of notch
+      const nx = tw
       d = [
         `M 0,0`,
         `H ${W}`,
@@ -249,5 +218,45 @@ function buildEdgeCenterMask(
     }
   }
 
+  return { W, H, d }
+}
+
+// ── Public API ─────────────────────────────────────────────────────────
+
+function resolvePathResult(params: PanelMaskParams): PathResult {
+  const { notchPosition = 'top-right' } = params
+
+  switch (notchPosition) {
+    case 'top-right':
+    case 'top-left':
+    case 'bottom-right':
+    case 'bottom-left':
+      return buildCornerPath(params, notchPosition)
+    case 'top':
+    case 'right':
+    case 'bottom':
+    case 'left':
+      return buildEdgeCenterPath(params, notchPosition)
+  }
+}
+
+/**
+ * Build an SVG data-URI **fill** mask with an L-shaped or U-shaped cutout.
+ * Uses the card's actual pixel dimensions as the SVG viewBox so coordinates
+ * map 1:1 -- no stretching distortion.
+ */
+export function buildPanelMask(params: PanelMaskParams): string {
+  const { W, H, d } = resolvePathResult(params)
   return toSvgDataUri(W, H, d)
+}
+
+/**
+ * Build an SVG data-URI **stroke** mask tracing the full L / U-shape outline.
+ * Used to render a border along the entire panel edge (including the notch
+ * curves) as a single element -- avoids the double-opacity artifacts that
+ * occur when a CSS border overlaps a separate notch-only stroke.
+ */
+export function buildPanelBorder(params: PanelMaskParams): string {
+  const { W, H, d } = resolvePathResult(params)
+  return toStrokeSvgDataUri(W, H, d)
 }

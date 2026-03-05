@@ -3,7 +3,7 @@
 import { useRef, useLayoutEffect, useEffect, useState, useMemo } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useFolderCard } from './FolderCardGroup'
-import { buildPanelMask } from './mask'
+import { buildPanelMask, buildPanelBorder } from './mask'
 import { getHingeConfig, resolveHingeSide, getNotchPositionClasses } from './hinge'
 import { DEFAULT_PERSPECTIVE } from './constants'
 import type { FolderCardProps } from './types'
@@ -82,10 +82,10 @@ export function FolderCard({
     return () => ro.disconnect()
   }, [renderTab, liveRadius])
 
-  // Generate mask dynamically from measured values
-  const panelMask = useMemo(() => {
-    if (!renderTab || cardSize.width === 0 || tabSize.width === 0) return null
-    return buildPanelMask({
+  // Generate mask and notch border dynamically from measured values
+  const { panelMask, notchBorder } = useMemo(() => {
+    if (!renderTab || cardSize.width === 0 || tabSize.width === 0) return { panelMask: null, notchBorder: null }
+    const maskParams = {
       cardWidth: cardSize.width,
       cardHeight: cardSize.height,
       tabWidth: tabSize.width,
@@ -93,7 +93,11 @@ export function FolderCard({
       notchPosition,
       concaveRadius: notchOuterRadius ?? cardRadius,
       invertedRadius: notchInnerRadius ?? Math.round(cardRadius * 0.7),
-    })
+    }
+    return {
+      panelMask: buildPanelMask(maskParams),
+      notchBorder: buildPanelBorder(maskParams),
+    }
   }, [renderTab, cardSize.width, cardSize.height, tabSize.width, tabSize.height, notchPosition, notchOuterRadius, notchInnerRadius, cardRadius])
 
   const { stiffness, damping } = config.springConfig
@@ -151,7 +155,7 @@ export function FolderCard({
         onClick={() => {
           hoverYBase.jump(0)
           const rect = wrapperRef.current?.getBoundingClientRect()
-          if (rect) open(id, rect, angle.get(), renderLid, renderDetail, renderTab, panelMask, resolvedSide, notchPosition)
+          if (rect) open(id, rect, angle.get(), renderLid, renderDetail, renderTab, panelMask, notchBorder, resolvedSide, notchPosition)
         }}
         className={cn(
           'group relative flex w-full cursor-pointer flex-col rounded-(--fc-radius,1rem) text-left',
@@ -186,11 +190,27 @@ export function FolderCard({
                 className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
                 style={{
                   backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
-                  border: '1px solid var(--fc-lid-border, transparent)',
                   maskImage: panelMask,
                   maskSize: '100% 100%',
                   maskRepeat: 'no-repeat',
                   WebkitMaskImage: panelMask,
+                  WebkitMaskSize: '100% 100%',
+                  WebkitMaskRepeat: 'no-repeat',
+                }}
+              />
+            )}
+
+            {/* Notch inner-edge border -- stroke-only SVG mask reveals the border color
+                along the curved notch boundary where the lid mask clips the regular border. */}
+            {notchBorder && (
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  backgroundColor: 'var(--fc-lid-border, transparent)',
+                  maskImage: notchBorder,
+                  maskSize: '100% 100%',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskImage: notchBorder,
                   WebkitMaskSize: '100% 100%',
                   WebkitMaskRepeat: 'no-repeat',
                 }}
