@@ -204,7 +204,7 @@ export function FolderCard({
                 along the curved notch boundary where the lid mask clips the regular border. */}
             {notchBorder && (
               <div
-                className="pointer-events-none absolute inset-0"
+                className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
                 style={{
                   backgroundColor: 'var(--fc-lid-border, transparent)',
                   maskImage: notchBorder,
