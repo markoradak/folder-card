@@ -15,3 +15,4 @@ export const DEFAULT_REST_ROTATE_X = -20
 export const DEFAULT_PERSPECTIVE = 1800
 export const DEFAULT_BACKDROP_DURATION = 0.25
 export const DEFAULT_EXIT_DURATION = 0.15
+export const DEFAULT_FADE_LID = false

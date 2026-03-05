@@ -33,6 +33,7 @@ export interface FolderCardExpandedConfig {
   openRotateX: number
   backdropDuration: number
   exitDuration: number
+  fadeLid: boolean
   springConfig: { type: 'spring'; stiffness: number; damping: number; restDelta?: number; restSpeed?: number }
   backdropClassName?: string
   dialogClassName?: string
@@ -71,6 +72,7 @@ export function FolderCardExpanded({
     openRotateX,
     backdropDuration,
     exitDuration,
+    fadeLid,
     springConfig,
     backdropClassName,
     dialogClassName,
@@ -270,10 +272,13 @@ export function FolderCardExpanded({
       <motion.div
         className="pointer-events-none fixed z-55"
         style={{ overflow: 'visible' }}
-        initial={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height }}
-        animate={{ left: finalLeft, top: finalTop, width: finalWidth, height: finalHeight }}
-        exit={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height }}
-        transition={springTransition}
+        initial={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}
+        animate={{ left: finalLeft, top: finalTop, width: finalWidth, height: finalHeight, ...(fadeLid ? { opacity: 0 } : {}) }}
+        exit={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}
+        transition={{
+          ...springTransition,
+          ...(fadeLid ? { opacity: { duration: 0.3, ease: 'easeOut' } } : {}),
+        }}
       >
         {/* Inner rotating face -- perspective is element-local via transformTemplate
             so it doesn't drift when the FLIP container changes size */}

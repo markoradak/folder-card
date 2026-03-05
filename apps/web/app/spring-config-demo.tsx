@@ -14,6 +14,9 @@ const SPRINGS = [
     damping: 15,
     color: "#F59E0B",
     description: "Low damping creates a playful, oscillating motion with visible overshoot.",
+    bestFor: "Playful UIs, onboarding, gamification",
+    settle: "~800ms",
+    overshoot: "High",
   },
   {
     id: "smooth",
@@ -22,6 +25,9 @@ const SPRINGS = [
     damping: 50,
     color: "#8B5CF6",
     description: "High damping produces a fluid, elegant transition with no bounce.",
+    bestFor: "Dashboards, data-heavy layouts, editorial",
+    settle: "~400ms",
+    overshoot: "None",
   },
   {
     id: "snappy",
@@ -30,6 +36,9 @@ const SPRINGS = [
     damping: 30,
     color: "#10B981",
     description: "High stiffness makes the animation feel instant and responsive.",
+    bestFor: "Navigation, tool panels, quick actions",
+    settle: "~250ms",
+    overshoot: "Low",
   },
 ];
 
@@ -58,7 +67,7 @@ function CardFace({ spring }: { spring: (typeof SPRINGS)[number] }) {
       </FolderCardItem>
 
       <FolderCardItem>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <div>
             <p className="text-[11px] text-muted/60">Stiffness</p>
             <p className="font-mono text-sm font-semibold tabular-nums text-foreground">
@@ -71,6 +80,25 @@ function CardFace({ spring }: { spring: (typeof SPRINGS)[number] }) {
               {spring.damping}
             </p>
           </div>
+          <div>
+            <p className="text-[11px] text-muted/60">Overshoot</p>
+            <p className="font-mono text-sm font-semibold tabular-nums text-foreground">
+              {spring.overshoot}
+            </p>
+          </div>
+        </div>
+      </FolderCardItem>
+
+      <FolderCardItem>
+        <p className="text-xs leading-relaxed text-muted">
+          {spring.description}
+        </p>
+      </FolderCardItem>
+
+      <FolderCardItem>
+        <div className="mt-auto rounded-[10px] border border-border/40 bg-foreground/[0.02] px-3 py-2 dark:border-white/[0.06] dark:bg-white/[0.02]">
+          <p className="text-[11px] text-muted/60">Best for</p>
+          <p className="text-xs text-muted">{spring.bestFor}</p>
         </div>
       </FolderCardItem>
     </div>

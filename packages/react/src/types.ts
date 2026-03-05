@@ -30,6 +30,8 @@ export interface FolderCardGroupProps {
   exitDuration?: number
   backdropClassName?: string
   dialogClassName?: string
+  /** When true, the lid fades out as the card opens instead of staying visible during rotation. Default: false */
+  fadeLid?: boolean
   onOpen?: (id: string) => void
   onClose?: (id: string) => void
 }

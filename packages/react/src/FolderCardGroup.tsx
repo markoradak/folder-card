@@ -14,6 +14,7 @@ import {
   DEFAULT_CONTENT_REVEAL_DELAY,
   DEFAULT_DIALOG_VIEWPORT_PADDING,
   DEFAULT_EXIT_DURATION,
+  DEFAULT_FADE_LID,
   DEFAULT_OPEN_ROTATE_X,
   DEFAULT_SPRING_CONFIG,
 } from './constants'
@@ -66,6 +67,7 @@ export function FolderCardGroup({
   openRotateX = DEFAULT_OPEN_ROTATE_X,
   backdropDuration = DEFAULT_BACKDROP_DURATION,
   exitDuration = DEFAULT_EXIT_DURATION,
+  fadeLid = DEFAULT_FADE_LID,
   springConfig,
   backdropClassName,
   dialogClassName,
@@ -81,6 +83,7 @@ export function FolderCardGroup({
     openRotateX,
     backdropDuration,
     exitDuration,
+    fadeLid,
     springConfig: {
       type: 'spring',
       stiffness: springConfig?.stiffness ?? DEFAULT_SPRING_CONFIG.stiffness,

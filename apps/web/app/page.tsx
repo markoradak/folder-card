@@ -5,6 +5,7 @@ import { NotchPositionsDemo } from "./notch-positions-demo";
 import { HingeSidesDemo } from "./hinge-sides-demo";
 import { RecipeCardsDemo } from "./recipe-cards-demo";
 import { SpringConfigDemo } from "./spring-config-demo";
+import { FadeLidDemo } from "./fade-lid-demo";
 import { CodeBlock } from "./code-block";
 
 const INSTALL_CODE = `npm install @markoradak/folder-card framer-motion`;
@@ -341,6 +342,21 @@ export default function Home() {
             </p>
           </div>
           <SpringConfigDemo />
+        </div>
+      </section>
+
+      {/* Fade Lid */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Fade lid
+            </h2>
+            <p className="mt-3 text-muted">
+              With <code className="rounded-md border border-border/40 bg-card px-1.5 py-0.5 text-xs font-medium text-foreground dark:border-white/[0.08]">fadeLid</code>, the lid fades out on open instead of staying visible during 3D rotation.
+            </p>
+          </div>
+          <FadeLidDemo />
         </div>
       </section>
 
