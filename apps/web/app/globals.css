@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: #E0DED7;
+  --color-background: #FFFFFF;
   --color-surface: #F5F3EE;
   --color-border: #D4D1C9;
   --color-foreground: #1A1A1A;
@@ -22,17 +22,17 @@
 
 :root {
   --fc-radius: 20px;
-  --fc-card-bg: var(--color-card);
+  --fc-card-bg: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));
   --fc-foreground: var(--color-foreground);
-  --fc-border: var(--color-border);
+  --fc-border: transparent;
   --fc-muted: var(--color-muted);
-  --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --fc-shadow-sm: none;
+  --fc-shadow-lg: none;
   --fc-backdrop-bg: rgba(0, 0, 0, 0.5);
-  --fc-dialog-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  --fc-dialog-shadow: none;
   --fc-focus-ring: rgba(0, 0, 0, 0.2);
-  --fc-tint: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));
-  --fc-back-face: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));
+  --fc-tint: var(--color-card);
+  --fc-back-face: color-mix(in srgb, var(--color-foreground) 3%, var(--color-card));
 }
 
 .dark {
@@ -52,10 +52,10 @@
 
   --fc-card-bg: var(--color-card);
   --fc-foreground: var(--color-foreground);
-  --fc-border: var(--color-border);
+  --fc-border: transparent;
   --fc-muted: var(--color-muted);
-  --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --fc-shadow-sm: none;
+  --fc-shadow-lg: none;
   --fc-focus-ring: rgba(255, 255, 255, 0.2);
   --fc-tint: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));
   --fc-back-face: color-mix(in srgb, var(--color-foreground) 6%, var(--color-card));

@@ -157,12 +157,12 @@ export function FolderCard({
           'group relative flex w-full cursor-pointer flex-col rounded-(--fc-radius,1rem) text-left',
           'bg-card',
           'border border-border/40 dark:border-white/6',
-          'shadow-sm',
+          'shadow-(--fc-shadow-sm)',
           'outline-none focus-visible:ring-2 focus-visible:ring-(--fc-focus-ring,rgba(0,0,0,0.2)) focus-visible:ring-offset-2 focus-visible:ring-offset-card',
           className,
         )}
         whileHover={{
-          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+          boxShadow: 'var(--fc-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))',
         }}
         transition={{ duration: 0.3 }}
       >
@@ -225,7 +225,7 @@ export function FolderCard({
               style={{
                 transform: hinge.backFaceTransform,
                 background:
-                  `linear-gradient(${hinge.gradientDirection}, var(--fc-back-face, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card))), transparent 50%)`,
+                  `linear-gradient(${hinge.gradientDirection}, var(--fc-back-face, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card))), color-mix(in srgb, var(--fc-back-face, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card))) 30%, transparent) 50%)`,
               }}
             />
         </motion.div>
