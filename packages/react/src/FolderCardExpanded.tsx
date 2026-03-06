@@ -372,7 +372,7 @@ export function FolderCardExpanded({
       <motion.div
         data-fc-dialog=""
         className={cn(
-          'fixed z-50 overflow-hidden rounded-(--fc-radius,1rem) border border-border/40 bg-card shadow-2xl dark:border-white/6',
+          'fixed z-50 overflow-hidden rounded-(--fc-radius,1rem) bg-card shadow-2xl',
           dialogClassName,
         )}
         initial={{
