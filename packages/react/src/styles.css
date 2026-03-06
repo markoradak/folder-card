@@ -1,11 +1,10 @@
 /*
  * folder-card/styles
  *
- * Import this file if your project does NOT use Tailwind CSS.
- * Defines CSS variable defaults and [data-fc-*] structural rules.
+ * Import this stylesheet to get all structural styling for the folder-card
+ * components. No Tailwind CSS required.
  *
- * Tailwind users: skip this file -- the components use standard Tailwind classes.
- * Override any variable in :root (or a scoped selector) to theme the components.
+ * Override any --fc-* variable in :root (or a scoped selector) to theme.
  */
 
 :root {
@@ -38,6 +37,8 @@
   }
 }
 
+/* ── Card button ──────────────────────────────────────────────────── */
+
 [data-fc-card] {
   position: relative;
   display: flex;
@@ -49,6 +50,7 @@
   background-color: var(--fc-card-bg);
   border: 1px solid var(--fc-border);
   box-shadow: var(--fc-shadow-sm);
+  outline: none;
   transition-property: translate, box-shadow, border-color;
   transition-duration: var(--fc-transition-duration);
   transition-timing-function: var(--fc-transition-easing);
@@ -58,19 +60,138 @@
   box-shadow: var(--fc-shadow-lg);
 }
 
+[data-fc-card]:focus-visible {
+  box-shadow: 0 0 0 2px var(--fc-card-bg), 0 0 0 4px var(--fc-focus-ring);
+}
+
+/* ── Lid transform wrapper ────────────────────────────────────────── */
+
+[data-fc-lid-transform] {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+/* ── Lid overlay / mask layers ────────────────────────────────────── */
+
+[data-fc-lid-overlay] {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: var(--fc-radius);
+}
+
+/* ── Tab wrapper ──────────────────────────────────────────────────── */
+
+[data-fc-tab] {
+  pointer-events: none;
+  position: absolute;
+  z-index: 20;
+}
+
+[data-fc-tab][data-fc-notch-position="top-left"] {
+  top: 0;
+  left: 0;
+}
+
+[data-fc-tab][data-fc-notch-position="top"] {
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+}
+
+[data-fc-tab][data-fc-notch-position="top-right"] {
+  top: 0;
+  right: 0;
+}
+
+[data-fc-tab][data-fc-notch-position="right"] {
+  top: 50%;
+  right: 0;
+  translate: 0 -50%;
+}
+
+[data-fc-tab][data-fc-notch-position="bottom-right"] {
+  bottom: 0;
+  right: 0;
+}
+
+[data-fc-tab][data-fc-notch-position="bottom"] {
+  bottom: 0;
+  left: 50%;
+  translate: -50% 0;
+}
+
+[data-fc-tab][data-fc-notch-position="bottom-left"] {
+  bottom: 0;
+  left: 0;
+}
+
+[data-fc-tab][data-fc-notch-position="left"] {
+  top: 50%;
+  left: 0;
+  translate: 0 -50%;
+}
+
+/* ── Lid content wrapper ──────────────────────────────────────────── */
+
+[data-fc-lid-content] {
+  position: relative;
+  z-index: 10;
+  backface-visibility: hidden;
+}
+
+/* ── Back face ────────────────────────────────────────────────────── */
+
+[data-fc-lid-back] {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--fc-radius);
+  backface-visibility: hidden;
+}
+
+/* ── Backdrop ─────────────────────────────────────────────────────── */
+
 [data-fc-backdrop] {
   position: fixed;
   inset: 0;
+  z-index: 40;
   background: var(--fc-backdrop-bg);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
 
+/* ── Expanded lid container ───────────────────────────────────────── */
+
+[data-fc-lid-expanded] {
+  pointer-events: none;
+  position: fixed;
+  z-index: 55;
+  overflow: visible;
+}
+
+/* ── Expanded lid rotator ─────────────────────────────────────────── */
+
+[data-fc-lid-rotator] {
+  position: absolute;
+  inset: 1px;
+  transform-style: preserve-3d;
+}
+
+/* ── Dialog ────────────────────────────────────────────────────────── */
+
 [data-fc-dialog] {
   position: fixed;
+  z-index: 50;
   overflow: hidden;
   border-radius: var(--fc-radius);
   border: 1px solid var(--fc-border);
   background-color: var(--fc-card-bg);
   box-shadow: var(--fc-dialog-shadow);
+}
+
+/* ── Dialog content ───────────────────────────────────────────────── */
+
+[data-fc-dialog-content] {
+  height: 100%;
+  overflow: auto;
 }

@@ -4,7 +4,7 @@ import { useRef, useLayoutEffect, useEffect, useState, useMemo } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useFolderCard } from './FolderCardGroup'
 import { buildPanelMask, buildPanelBorder } from './mask'
-import { getHingeConfig, resolveHingeSide, getNotchPositionClasses } from './hinge'
+import { getHingeConfig, resolveHingeSide } from './hinge'
 import { DEFAULT_PERSPECTIVE } from './constants'
 import type { FolderCardProps } from './types'
 
@@ -157,13 +157,7 @@ export function FolderCard({
           const rect = wrapperRef.current?.getBoundingClientRect()
           if (rect) open(id, rect, angle.get(), renderLid, renderDetail, renderTab, panelMask, notchBorder, resolvedSide, notchPosition)
         }}
-        className={cn(
-          'group relative flex w-full cursor-pointer flex-col rounded-(--fc-radius,1rem) text-left',
-          'border border-border/40 dark:border-white/6',
-          'shadow-(--fc-shadow-sm)',
-          'outline-none focus-visible:ring-2 focus-visible:ring-(--fc-focus-ring,rgba(0,0,0,0.2)) focus-visible:ring-offset-2 focus-visible:ring-offset-card',
-          className,
-        )}
+        className={cn('group', className)}
         whileHover={{
           boxShadow: 'var(--fc-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))',
         }}
@@ -180,14 +174,14 @@ export function FolderCard({
             FolderCardExpanded and avoid drift during the FLIP animation */}
         <motion.div
           ref={lidRef}
-          className="relative transform-3d"
+          data-fc-lid-transform=""
           transformTemplate={(_, generated) => `perspective(${perspective}px) ${generated}`}
           style={{ transformOrigin: hinge.transformOrigin, [hinge.axis]: angle }}
         >
             {/* L-shape tinted overlay with mask (only when renderTab provides a tab) */}
             {panelMask && (
               <div
-                className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
+                data-fc-lid-overlay=""
                 style={{
                   backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
                   maskImage: panelMask,
@@ -204,7 +198,7 @@ export function FolderCard({
                 along the curved notch boundary where the lid mask clips the regular border. */}
             {notchBorder && (
               <div
-                className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
+                data-fc-lid-overlay=""
                 style={{
                   backgroundColor: 'var(--fc-lid-border, transparent)',
                   maskImage: notchBorder,
@@ -220,7 +214,7 @@ export function FolderCard({
             {/* Full-rectangle tint when no tab is provided */}
             {!renderTab && (
               <div
-                className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
+                data-fc-lid-overlay=""
                 style={{
                   backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
                   border: '1px solid var(--fc-lid-border, transparent)',
@@ -230,19 +224,19 @@ export function FolderCard({
 
             {/* Tab content -- positioned according to notchPosition */}
             {renderTab && (
-              <div ref={tabRef} className={cn('pointer-events-none', getNotchPositionClasses(notchPosition))}>
+              <div ref={tabRef} data-fc-tab="" data-fc-notch-position={notchPosition}>
                 {renderTab()}
               </div>
             )}
 
             {/* Lid content (consumer-provided) */}
-            <div className="relative z-10 backface-hidden">
+            <div data-fc-lid-content="">
               {renderLid()}
             </div>
 
             {/* Back face -- gradient visible behind the tilted lid */}
             <div
-              className="absolute inset-0 rounded-(--fc-radius,1rem) backface-hidden"
+              data-fc-lid-back=""
               style={{
                 transform: hinge.backFaceTransform,
                 background:

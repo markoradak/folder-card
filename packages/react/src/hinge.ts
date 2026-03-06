@@ -1,4 +1,4 @@
-import type { HingeSide, HingeSideProp, NotchPosition } from './types'
+import type { HingeSide, HingeSideProp } from './types'
 
 export type RotationAxis = 'rotateX' | 'rotateY'
 
@@ -64,17 +64,3 @@ export function resolveHingeSide(side: HingeSideProp, width: number, height: num
   return height > width ? 'left' : 'bottom'
 }
 
-const NOTCH_POSITION_CLASSES: Record<NotchPosition, string> = {
-  'top-left': 'absolute top-0 left-0 z-20',
-  'top': 'absolute top-0 left-1/2 -translate-x-1/2 z-20',
-  'top-right': 'absolute top-0 right-0 z-20',
-  'right': 'absolute top-1/2 right-0 -translate-y-1/2 z-20',
-  'bottom-right': 'absolute bottom-0 right-0 z-20',
-  'bottom': 'absolute bottom-0 left-1/2 -translate-x-1/2 z-20',
-  'bottom-left': 'absolute bottom-0 left-0 z-20',
-  'left': 'absolute top-1/2 left-0 -translate-y-1/2 z-20',
-}
-
-export function getNotchPositionClasses(pos: NotchPosition): string {
-  return NOTCH_POSITION_CLASSES[pos]
-}

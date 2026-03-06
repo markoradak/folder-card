@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { motion, usePresence, useAnimationControls } from 'framer-motion'
-import { getHingeConfig, getNotchPositionClasses } from './hinge'
+import { getHingeConfig } from './hinge'
 import type { HingeSide, NotchPosition } from './types'
 
 const lidContentVariants = {
@@ -22,10 +22,6 @@ const detailContentVariants = {
 
 export { lidContentVariants, lidItemVariants, detailContentVariants }
 export { itemVariants } from './FolderCardItem'
-
-function cn(...classes: (string | undefined | false | null)[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 export interface FolderCardExpandedConfig {
   dialogViewportPadding: number
@@ -260,7 +256,7 @@ export function FolderCardExpanded({
       {/* Backdrop: fades in/out independently */}
       <motion.div
         data-fc-backdrop=""
-        className={cn('fixed inset-0 z-40 bg-black/50 backdrop-blur-sm', backdropClassName)}
+        className={backdropClassName || undefined}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -271,8 +267,7 @@ export function FolderCardExpanded({
       {/* Front-face lid -- outer div springs position/size with the dialog; inner div rotates */}
       <motion.div
         data-fc-lid=""
-        className="pointer-events-none fixed z-55"
-        style={{ overflow: 'visible' }}
+        data-fc-lid-expanded=""
         initial={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}
         animate={{ left: finalLeft, top: finalTop, width: finalWidth, height: finalHeight, ...(fadeLid ? { opacity: 0 } : {}) }}
         exit={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}
@@ -284,7 +279,7 @@ export function FolderCardExpanded({
         {/* Inner rotating face -- perspective is element-local via transformTemplate
             so it doesn't drift when the FLIP container changes size */}
         <motion.div
-          className="absolute inset-px transform-3d"
+          data-fc-lid-rotator=""
           transformTemplate={(_, generated) => `perspective(1800px) ${generated}`}
           style={{ transformOrigin: hinge.transformOrigin }}
           initial={{ [hinge.axis]: initialAngle }}
@@ -297,11 +292,11 @@ export function FolderCardExpanded({
               Using inset-px on the rotating div matches the collapsed card's lid
               (which sits inside the button's 1px border), ensuring identical
               perspective projection and no visual jump on close. */}
-          <div className="absolute inset-0 rounded-(--fc-radius,1rem) backface-hidden">
+          <div data-fc-lid-back="" style={{ backfaceVisibility: 'hidden' }}>
             {/* Tinted overlay -- uses the same SVG mask as the collapsed card so the
                 notch stretches smoothly and continuously during the FLIP spring. */}
             <div
-              className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
+              data-fc-lid-overlay=""
               style={{
                 backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
                 ...(panelMask ? {
@@ -319,7 +314,7 @@ export function FolderCardExpanded({
                 along the curved notch boundary where the lid mask clips the regular border. */}
             {notchBorder && (
               <div
-                className="pointer-events-none absolute inset-0 rounded-(--fc-radius,1rem)"
+                data-fc-lid-overlay=""
                 style={{
                   backgroundColor: 'var(--fc-lid-border, transparent)',
                   maskImage: notchBorder,
@@ -335,7 +330,8 @@ export function FolderCardExpanded({
             {/* Tab content on expanded lid -- fades out quickly on open, back in on close */}
             {renderTab && (
               <div
-                className={cn('pointer-events-none', getNotchPositionClasses(notchPosition))}
+                data-fc-tab=""
+                data-fc-notch-position={notchPosition}
                 style={{
                   opacity: tabHidden ? 0 : 1,
                   transition: tabHidden ? 'opacity 0.05s ease-out' : 'opacity 0.15s ease-out',
@@ -347,7 +343,7 @@ export function FolderCardExpanded({
 
             {/* Lid content with stagger animation controller */}
             <motion.div
-              className="relative z-10"
+              data-fc-lid-content=""
               variants={lidContentVariants}
               initial="hidden"
               animate={lidControls}
@@ -358,7 +354,7 @@ export function FolderCardExpanded({
 
           {/* Back face -- gradient visible behind the lid */}
           <div
-            className="absolute inset-0 rounded-(--fc-radius,1rem) backface-hidden"
+            data-fc-lid-back=""
             style={{
               transform: hinge.backFaceTransform,
               background:
@@ -371,10 +367,7 @@ export function FolderCardExpanded({
       {/* Dialog container: springs from card position to content-measured overlay */}
       <motion.div
         data-fc-dialog=""
-        className={cn(
-          'fixed z-50 overflow-hidden rounded-(--fc-radius,1rem) bg-card shadow-2xl',
-          dialogClassName,
-        )}
+        className={dialogClassName || undefined}
         initial={{
           left: cardRect.left,
           top: cardRect.top,
@@ -400,7 +393,7 @@ export function FolderCardExpanded({
       >
         {/* Content: staggers in after container settles, fades out as a whole on exit */}
         <motion.div
-          className="h-full overflow-auto"
+          data-fc-dialog-content=""
           variants={detailContentVariants}
           initial="hidden"
           animate={detailControls}
