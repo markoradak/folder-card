@@ -1,5 +1,5 @@
-export const DEFAULT_SPRING_STIFFNESS = 350
-export const DEFAULT_SPRING_DAMPING = 35
+export const DEFAULT_SPRING_STIFFNESS = 320
+export const DEFAULT_SPRING_DAMPING = 42
 
 export const DEFAULT_SPRING_CONFIG = {
   type: 'spring' as const,

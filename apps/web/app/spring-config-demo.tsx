@@ -32,8 +32,8 @@ const SPRINGS = [
   {
     id: "snappy",
     label: "Snappy",
-    stiffness: 600,
-    damping: 30,
+    stiffness: 450,
+    damping: 38,
     color: "#10B981",
     description: "High stiffness makes the animation feel instant and responsive.",
     bestFor: "Navigation, tool panels, quick actions",
