@@ -8,16 +8,6 @@ import {
 
 const HINGES = [
   {
-    id: "hinge-bottom",
-    side: "bottom" as const,
-    axis: "rotateX",
-    rest: "-20",
-    open: "-100",
-    color: "#3B82F6",
-    description: "Lid opens upward from the bottom edge, like a laptop screen.",
-    arrow: "\u2191",
-  },
-  {
     id: "hinge-top",
     side: "top" as const,
     axis: "rotateX",
@@ -25,17 +15,7 @@ const HINGES = [
     open: "100",
     color: "#8B5CF6",
     description: "Lid opens downward from the top edge, like a flip phone.",
-    arrow: "\u2193",
-  },
-  {
-    id: "hinge-left",
-    side: "left" as const,
-    axis: "rotateY",
-    rest: "-15",
-    open: "-120",
-    color: "#F59E0B",
-    description: "Lid swings open to the right from the left edge, like a book.",
-    arrow: "\u2192",
+    arrow: "\u2191",
   },
   {
     id: "hinge-right",
@@ -45,14 +25,34 @@ const HINGES = [
     open: "120",
     color: "#10B981",
     description: "Lid swings open to the left from the right edge.",
+    arrow: "\u2192",
+  },
+  {
+    id: "hinge-left",
+    side: "left" as const,
+    axis: "rotateY",
+    rest: "-15",
+    open: "-120",
+    color: "#F59E0B",
+    description: "Lid swings open to the right from the left edge, like a book.",
     arrow: "\u2190",
+  },
+  {
+    id: "hinge-bottom",
+    side: "bottom" as const,
+    axis: "rotateX",
+    rest: "-20",
+    open: "-100",
+    color: "#3B82F6",
+    description: "Lid opens upward from the bottom edge, like a laptop screen.",
+    arrow: "\u2193",
   },
 ];
 
 export function HingeSidesDemo() {
   return (
     <FolderCardGroup>
-      <div className="grid w-full gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid w-full max-w-[640px] gap-8 sm:grid-cols-2">
         {HINGES.map((hinge) => (
           <FolderCard
             key={hinge.id}
@@ -60,7 +60,7 @@ export function HingeSidesDemo() {
             liveRadius
             hingeSide={hinge.side}
             renderLid={() => (
-              <div className="flex flex-col gap-4 p-5">
+              <div className="flex flex-col gap-5 p-6">
                 <FolderCardItem>
                   <div className="flex items-center gap-3">
                     <div

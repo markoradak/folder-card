@@ -330,7 +330,8 @@ export default function Home() {
 
       {/* Footer */}
       <hr className="border-[#e5e5e5] dark:border-[#2a2a2a]" />
-      <footer className="py-8 text-sm text-[#666]">
+      <footer className="flex items-center justify-between py-12 text-xs text-[#999]">
+        <p>&copy; {new Date().getFullYear()} MIT License</p>
         <p>
           Built by{" "}
           <a
@@ -341,16 +342,6 @@ export default function Home() {
           >
             Marko Radak
           </a>
-          . Source on{" "}
-          <a
-            href="https://github.com/markoradak/folder-card"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-accent"
-          >
-            GitHub
-          </a>
-          .
         </p>
       </footer>
     </main>
