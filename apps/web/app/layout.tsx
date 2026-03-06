@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "./theme-provider";
-import { Nav } from "./nav";
 
 export const metadata: Metadata = {
   title: "@markoradak/folder-card",
@@ -17,6 +16,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -31,9 +40,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className="min-h-screen bg-white text-[#222] antialiased dark:bg-[#0f0f0f] dark:text-white">
         <ThemeProvider>
-          <Nav />
           {children}
         </ThemeProvider>
       </body>

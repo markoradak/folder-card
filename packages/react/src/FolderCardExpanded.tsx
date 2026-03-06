@@ -270,6 +270,7 @@ export function FolderCardExpanded({
 
       {/* Front-face lid -- outer div springs position/size with the dialog; inner div rotates */}
       <motion.div
+        data-fc-lid=""
         className="pointer-events-none fixed z-55"
         style={{ overflow: 'visible' }}
         initial={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}

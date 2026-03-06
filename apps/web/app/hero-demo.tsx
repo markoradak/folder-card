@@ -40,17 +40,6 @@ const PROJECTS = [
     errors: "0%",
     bars: [90, 88, 92, 85, 95, 90, 88, 92, 95, 90, 85, 88, 92, 95, 90, 88, 85, 92, 95, 90, 88, 92, 85, 90],
   },
-  {
-    id: "cdn-edge",
-    name: "CDN Edge",
-    url: "cdn.acme.com",
-    color: "#10B981",
-    status: "Active",
-    uptime: "99.99%",
-    requests: "8.7M",
-    errors: "0.01%",
-    bars: [85, 90, 88, 92, 95, 88, 85, 90, 92, 88, 95, 90, 85, 88, 92, 90, 95, 88, 85, 92, 90, 88, 95, 85],
-  },
 ];
 
 function ActivityBars({ bars, color }: { bars: number[]; color: string }) {
@@ -72,7 +61,7 @@ function ActivityBars({ bars, color }: { bars: number[]; color: string }) {
 
 function CardFace({ project }: { project: (typeof PROJECTS)[number] }) {
   return (
-    <div className="flex flex-col gap-4 p-5">
+    <div className="flex flex-col gap-5 p-6">
       <FolderCardItem>
         <div className="flex items-center gap-3">
           <div
@@ -95,7 +84,9 @@ function CardFace({ project }: { project: (typeof PROJECTS)[number] }) {
       </FolderCardItem>
 
       <FolderCardItem>
-        <ActivityBars bars={project.bars} color={project.color} />
+        <div className="pt-4">
+          <ActivityBars bars={project.bars} color={project.color} />
+        </div>
       </FolderCardItem>
 
       <FolderCardItem>
@@ -207,7 +198,7 @@ function CardDetail({
 export function HeroDemo() {
   return (
     <FolderCardGroup>
-      <div className="grid w-full gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid w-full gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {PROJECTS.map((project) => (
           <FolderCard
             key={project.id}
