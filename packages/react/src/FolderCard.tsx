@@ -129,11 +129,11 @@ export function FolderCard({
       ref={wrapperRef}
       data-fc-card-wrapper=""
       style={{
+        ...style,
         opacity: isHidden ? 0 : 1,
         // Fade out when opening; appear instantly when exit animation completes
         transition: isHidden ? 'opacity 0.15s ease-out' : 'none',
         pointerEvents: isHidden ? 'none' : 'auto',
-        ...style,
       }}
     >
       <motion.button
@@ -141,12 +141,12 @@ export function FolderCard({
         data-fc-card=""
         style={{ y: hoverY }}
         onMouseEnter={() => {
-          if (settlingRef.current) return
+          if (settlingRef.current || config.reducedMotion) return
           angleBase.set(hinge.hoverAngle)
           hoverYBase.set(HOVER_LIFT_Y)
         }}
         onMouseLeave={() => {
-          if (settlingRef.current) return
+          if (settlingRef.current || config.reducedMotion) return
           angleBase.set(hinge.restAngle)
           hoverYBase.set(0)
         }}
@@ -170,10 +170,10 @@ export function FolderCard({
         }}
         aria-expanded={isSelected}
         className={['group', className].filter(Boolean).join(' ')}
-        whileHover={{
+        whileHover={config.reducedMotion ? {} : {
           boxShadow: 'var(--fc-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))',
         }}
-        transition={{ duration: 0.3 }}
+        transition={config.reducedMotion ? { duration: 0 } : { duration: 0.3 }}
       >
         {/* Sentinel: tracks --fc-radius changes so ResizeObserver re-reads border-radius */}
         <div

@@ -10,11 +10,12 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, useReducedMotion } from 'framer-motion'
 import { FolderCardExpanded, type FolderCardExpandedConfig } from './FolderCardExpanded'
 import {
   DEFAULT_BACKDROP_DURATION,
   DEFAULT_CONTENT_REVEAL_DELAY,
+  DEFAULT_DIALOG_MIN_WIDTH,
   DEFAULT_DIALOG_VIEWPORT_PADDING,
   DEFAULT_EXIT_DURATION,
   DEFAULT_FADE_LID,
@@ -77,6 +78,7 @@ export function FolderCardGroup({
   backdropDuration = DEFAULT_BACKDROP_DURATION,
   exitDuration = DEFAULT_EXIT_DURATION,
   fadeLid = DEFAULT_FADE_LID,
+  dialogMinWidth = DEFAULT_DIALOG_MIN_WIDTH,
   springConfig,
   backdropClassName,
   dialogClassName,
@@ -85,27 +87,26 @@ export function FolderCardGroup({
 }: FolderCardGroupProps) {
   const [selected, setSelected] = useState<SelectedCard | null>(null)
   const [exitingId, setExitingId] = useState<string | null>(null)
+  const prefersReducedMotion = useReducedMotion() ?? false
 
   const stiffness = springConfig?.stiffness ?? DEFAULT_SPRING_CONFIG.stiffness
   const damping = springConfig?.damping ?? DEFAULT_SPRING_CONFIG.damping
 
   const config = useMemo<FolderCardExpandedConfig>(() => ({
     dialogViewportPadding,
-    contentRevealDelay,
+    contentRevealDelay: prefersReducedMotion ? 0 : contentRevealDelay,
     openAngle,
-    backdropDuration,
-    exitDuration,
+    backdropDuration: prefersReducedMotion ? 0 : backdropDuration,
+    exitDuration: prefersReducedMotion ? 0 : exitDuration,
     fadeLid,
-    springConfig: {
-      type: 'spring' as const,
-      stiffness,
-      damping,
-      restDelta: 0.01,
-      restSpeed: 0.5,
-    },
+    springConfig: prefersReducedMotion
+      ? { type: 'spring' as const, stiffness: 10000, damping: 200 }
+      : { type: 'spring' as const, stiffness, damping, restDelta: 0.01, restSpeed: 0.5 },
     backdropClassName,
     dialogClassName,
-  }), [dialogViewportPadding, contentRevealDelay, openAngle, backdropDuration, exitDuration, fadeLid, stiffness, damping, backdropClassName, dialogClassName])
+    dialogMinWidth,
+    reducedMotion: prefersReducedMotion,
+  }), [dialogViewportPadding, contentRevealDelay, openAngle, backdropDuration, exitDuration, fadeLid, stiffness, damping, backdropClassName, dialogClassName, dialogMinWidth, prefersReducedMotion])
 
   // Stable refs for callbacks so open/close identities never change
   const onOpenRef = useRef(onOpen)

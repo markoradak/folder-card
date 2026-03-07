@@ -28,6 +28,8 @@ export interface FolderCardGroupProps {
   backdropDuration?: number
   /** Duration (s) of the content fade-out on close. Default: 0.15 */
   exitDuration?: number
+  /** Maximum target width (px) the dialog scales to when content is smaller than this floor. Default: 1000 */
+  dialogMinWidth?: number
   backdropClassName?: string
   dialogClassName?: string
   /** When true, the lid fades out as the card opens instead of staying visible during rotation. Default: false */

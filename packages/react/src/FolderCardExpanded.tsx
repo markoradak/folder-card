@@ -36,6 +36,8 @@ export interface FolderCardExpandedConfig {
   springConfig: { type: 'spring'; stiffness: number; damping: number; restDelta?: number; restSpeed?: number }
   backdropClassName?: string
   dialogClassName?: string
+  dialogMinWidth: number
+  reducedMotion: boolean
 }
 
 interface FolderCardExpandedProps {
@@ -79,6 +81,8 @@ export function FolderCardExpanded({
     springConfig,
     backdropClassName,
     dialogClassName,
+    dialogMinWidth,
+    reducedMotion,
   } = config
 
   const hinge = getHingeConfig(hingeSide)
@@ -104,23 +108,38 @@ export function FolderCardExpanded({
   )
 
   useEffect(() => {
+    let rafId = 0
     function handleResize() {
-      setViewport({ width: window.innerWidth, height: window.innerHeight })
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        setViewport({ width: window.innerWidth, height: window.innerHeight })
+      })
     }
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      cancelAnimationFrame(rafId)
+    }
   }, [])
 
   // Reveal dialog detail content with stagger after a short delay
   useEffect(() => {
+    if (reducedMotion) {
+      detailControls.set('visible')
+      return
+    }
     const t = setTimeout(() => detailControls.start('visible'), contentRevealDelay)
     return () => clearTimeout(t)
-  }, [contentRevealDelay, detailControls])
+  }, [contentRevealDelay, detailControls, reducedMotion])
 
   // Play stagger on open
   useEffect(() => {
-    lidControls.start('visible')
-  }, [lidControls])
+    if (reducedMotion) {
+      lidControls.set('visible')
+    } else {
+      lidControls.start('visible')
+    }
+  }, [lidControls, reducedMotion])
 
   // Fade out tab content on open immediately
   useEffect(() => {
@@ -130,11 +149,15 @@ export function FolderCardExpanded({
   // Reset and re-play stagger on close (once lid swings back past -90deg)
   useEffect(() => {
     if (!isPresent) {
-      lidControls.set('hidden')
-      const t = setTimeout(() => lidControls.start('visible'), STAGGER_REPLAY_DELAY)
-      return () => clearTimeout(t)
+      if (reducedMotion) {
+        lidControls.set('visible')
+      } else {
+        lidControls.set('hidden')
+        const t = setTimeout(() => lidControls.start('visible'), STAGGER_REPLAY_DELAY)
+        return () => clearTimeout(t)
+      }
     }
-  }, [isPresent, lidControls])
+  }, [isPresent, lidControls, reducedMotion])
 
   // Fade tab content back in on close (with delay so lid settles first)
   useEffect(() => {
@@ -187,8 +210,8 @@ export function FolderCardExpanded({
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && !e.defaultPrevented) onClose()
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
   // Focus trap: move focus into the dialog and cycle Tab within it.
@@ -281,7 +304,7 @@ export function FolderCardExpanded({
     // Aspect-ratio-preserving minimum: scale the card up to a target width,
     // then clamp to viewport if the resulting height overflows.
     const cardAspect = cardRect.width / cardRect.height
-    let minW = Math.min(1000, maxW)
+    let minW = Math.min(dialogMinWidth, maxW)
     let minH = minW / cardAspect
     if (minH > maxH) {
       minH = maxH
@@ -293,7 +316,7 @@ export function FolderCardExpanded({
     const finalLeft = (viewport.width - finalWidth) / 2
     const finalTop = Math.max(pad, (viewport.height - finalHeight) / 2)
     return { finalWidth, finalHeight, finalLeft, finalTop }
-  }, [measured, dialogViewportPadding, cardRect, viewport])
+  }, [measured, dialogViewportPadding, dialogMinWidth, cardRect, viewport])
 
   const { finalWidth, finalHeight, finalLeft, finalTop } = dialogRect
   const springTransition = springConfig

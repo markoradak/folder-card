@@ -8,6 +8,7 @@ export type { HingeConfig, RotationAxis } from './hinge'
 export { lidContentVariants, lidItemVariants, detailContentVariants } from './FolderCardExpanded'
 export type { FolderCardExpandedConfig } from './FolderCardExpanded'
 export { FolderCardItem, itemVariants } from './FolderCardItem'
+export type { FolderCardItemProps } from './FolderCardItem'
 export type {
   FolderCardGroupProps,
   FolderCardProps,

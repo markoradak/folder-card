@@ -20,3 +20,4 @@ export const SETTLE_TIMEOUT = 500
 export const STAGGER_REPLAY_DELAY = 150
 export const TAB_RESHOW_DELAY = 300
 export const EXIT_SAFETY_TIMEOUT = 2000
+export const DEFAULT_DIALOG_MIN_WIDTH = 1000

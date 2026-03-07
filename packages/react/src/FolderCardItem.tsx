@@ -8,7 +8,7 @@ export const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.15 } },
 }
 
-interface FolderCardItemProps {
+export interface FolderCardItemProps {
   children: ReactNode
   className?: string
   style?: React.CSSProperties
