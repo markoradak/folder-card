@@ -3,7 +3,7 @@
 import { useRef, useLayoutEffect, useEffect, useState, useMemo } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useFolderCard } from './FolderCardGroup'
-import { buildPanelMask, buildPanelBorder } from './mask'
+import { buildPanelMask, buildPanelBorder, buildMaskStyle } from './mask'
 import { getHingeConfig, resolveHingeSide } from './hinge'
 import { DEFAULT_PERSPECTIVE, HOVER_LIFT_Y, SETTLE_TIMEOUT } from './constants'
 import type { FolderCardProps } from './types'
@@ -196,12 +196,7 @@ export function FolderCard({
                 data-fc-lid-overlay=""
                 style={{
                   backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
-                  maskImage: panelMask,
-                  maskSize: '100% 100%',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskImage: panelMask,
-                  WebkitMaskSize: '100% 100%',
-                  WebkitMaskRepeat: 'no-repeat',
+                  ...buildMaskStyle(panelMask),
                 }}
               />
             )}
@@ -213,12 +208,7 @@ export function FolderCard({
                 data-fc-lid-overlay=""
                 style={{
                   backgroundColor: 'var(--fc-lid-border, transparent)',
-                  maskImage: notchBorder,
-                  maskSize: '100% 100%',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskImage: notchBorder,
-                  WebkitMaskSize: '100% 100%',
-                  WebkitMaskRepeat: 'no-repeat',
+                  ...buildMaskStyle(notchBorder),
                 }}
               />
             )}

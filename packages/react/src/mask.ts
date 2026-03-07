@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import type { NotchPosition } from './types'
 
 export interface PanelMaskParams {
@@ -248,6 +249,23 @@ function resolvePathResult(params: PanelMaskParams): PathResult {
 export function buildPanelMask(params: PanelMaskParams): string {
   const { W, H, d } = resolvePathResult(params)
   return toSvgDataUri(W, H, d)
+}
+
+/**
+ * Build an inline style object that applies an SVG data-URI as both the
+ * standard `mask-image` and the `-webkit-mask-image` (for Safari/older Chrome).
+ * All three mask sub-properties (image, size, repeat) are set so the mask
+ * covers the element exactly once at full size.
+ */
+export function buildMaskStyle(maskImage: string): CSSProperties {
+  return {
+    maskImage,
+    maskSize: '100% 100%',
+    maskRepeat: 'no-repeat',
+    WebkitMaskImage: maskImage,
+    WebkitMaskSize: '100% 100%',
+    WebkitMaskRepeat: 'no-repeat',
+  }
 }
 
 /**

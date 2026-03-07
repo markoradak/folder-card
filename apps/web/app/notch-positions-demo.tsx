@@ -7,6 +7,7 @@ import {
   FolderCardItem,
 } from "@markoradak/folder-card";
 import type { NotchPosition, HingeSideProp } from "@markoradak/folder-card";
+import { CloseButtonIcon } from "./close-button-icon";
 
 const POSITIONS: NotchPosition[] = [
   "top-left",
@@ -191,17 +192,10 @@ export function NotchPositionsDemo() {
               )}
               renderDetail={(close) => (
                 <div className="relative flex flex-col gap-5 p-6">
-                  <button
-                    type="button"
+                  <CloseButtonIcon
                     onClick={close}
                     className="absolute right-2 top-2 z-10 flex size-9 items-center justify-center rounded-full border border-border/40 text-muted transition-colors hover:text-foreground dark:border-white/8"
-                    aria-label="Close"
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
+                  />
                   <FolderCardItem>
                     <h2 className="text-lg font-bold tracking-tight text-foreground">
                       Notch: {POSITION_LABELS[position]}

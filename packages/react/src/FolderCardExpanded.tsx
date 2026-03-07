@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { motion, usePresence, useAnimationControls } from 'framer-motion'
 import { getHingeConfig } from './hinge'
+import { buildMaskStyle } from './mask'
 import { STAGGER_REPLAY_DELAY, TAB_RESHOW_DELAY } from './constants'
 import type { HingeSide, NotchPosition } from './types'
 
@@ -390,14 +391,7 @@ export function FolderCardExpanded({
               data-fc-lid-overlay=""
               style={{
                 backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
-                ...(panelMask ? {
-                  maskImage: panelMask,
-                  maskSize: '100% 100%',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskImage: panelMask,
-                  WebkitMaskSize: '100% 100%',
-                  WebkitMaskRepeat: 'no-repeat',
-                } : {}),
+                ...(panelMask ? buildMaskStyle(panelMask) : {}),
               }}
             />
 
@@ -408,12 +402,7 @@ export function FolderCardExpanded({
                 data-fc-lid-overlay=""
                 style={{
                   backgroundColor: 'var(--fc-lid-border, transparent)',
-                  maskImage: notchBorder,
-                  maskSize: '100% 100%',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskImage: notchBorder,
-                  WebkitMaskSize: '100% 100%',
-                  WebkitMaskRepeat: 'no-repeat',
+                  ...buildMaskStyle(notchBorder),
                 }}
               />
             )}

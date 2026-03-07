@@ -1,7 +1,7 @@
 export { FolderCardGroup, useFolderCard } from './FolderCardGroup'
 export type { OpenCardParams } from './FolderCardGroup'
 export { FolderCard } from './FolderCard'
-export { buildPanelMask, buildPanelBorder } from './mask'
+export { buildPanelMask, buildPanelBorder, buildMaskStyle } from './mask'
 export type { PanelMaskParams } from './mask'
 export { getHingeConfig, resolveHingeSide } from './hinge'
 export type { HingeConfig, RotationAxis } from './hinge'
