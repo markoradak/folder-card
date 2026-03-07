@@ -1,9 +1,12 @@
 'use client'
 
-import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { motion, usePresence, useAnimationControls } from 'framer-motion'
 import { getHingeConfig } from './hinge'
 import type { HingeSide, NotchPosition } from './types'
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 const lidContentVariants = {
   hidden: {},
@@ -21,7 +24,6 @@ const detailContentVariants = {
 }
 
 export { lidContentVariants, lidItemVariants, detailContentVariants }
-export { itemVariants } from './FolderCardItem'
 
 export interface FolderCardExpandedConfig {
   dialogViewportPadding: number
@@ -38,6 +40,7 @@ export interface FolderCardExpandedConfig {
 interface FolderCardExpandedProps {
   cardRect: DOMRect
   initialAngle: number
+  perspective: number
   renderLid: () => ReactNode
   renderDetail: (close: () => void) => ReactNode
   renderTab?: () => ReactNode
@@ -52,6 +55,7 @@ interface FolderCardExpandedProps {
 export function FolderCardExpanded({
   cardRect,
   initialAngle,
+  perspective,
   renderLid,
   renderDetail,
   renderTab,
@@ -88,8 +92,20 @@ export function FolderCardExpanded({
   const lidControls = useAnimationControls()
   const detailControls = useAnimationControls()
   const measureRef = useRef<HTMLDivElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
   const [measured, setMeasured] = useState<{ width: number; height: number } | null>(null)
   const [tabHidden, setTabHidden] = useState(false)
+
+  // Track viewport size so the dialog repositions on resize
+  const [viewport, setViewport] = useState({ width: window.innerWidth, height: window.innerHeight })
+
+  useEffect(() => {
+    function handleResize() {
+      setViewport({ width: window.innerWidth, height: window.innerHeight })
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Reveal dialog detail content with stagger after a short delay
   useEffect(() => {
@@ -171,6 +187,52 @@ export function FolderCardExpanded({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
+  // Focus trap: move focus into the dialog and cycle Tab within it.
+  // Restores focus to the previously-focused element on unmount.
+  useEffect(() => {
+    const dialogEl = dialogRef.current
+    if (!dialogEl) return
+
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    dialogEl.focus({ preventScroll: true })
+
+    function handleTab(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return
+
+      const focusable = dialogEl!.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      if (focusable.length === 0) {
+        e.preventDefault()
+        return
+      }
+
+      const first = focusable[0]!
+      const last = focusable[focusable.length - 1]!
+
+      if (e.shiftKey) {
+        if (document.activeElement === first || document.activeElement === dialogEl) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (document.activeElement === last || document.activeElement === dialogEl) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleTab)
+    return () => {
+      document.removeEventListener('keydown', handleTab)
+      previouslyFocused?.focus()
+    }
+  }, [])
+
+  // Mark the measurement container as inert (React 18+ compatible)
+  useLayoutEffect(() => {
+    measureRef.current?.setAttribute('inert', '')
+  }, [])
+
   // Continuously measure the hidden container. A ResizeObserver handles both
   // the initial layout and subsequent size changes when async content loads
   // (e.g. data fetches that replace a loading skeleton with full content).
@@ -199,8 +261,8 @@ export function FolderCardExpanded({
   // dialog proportionally, then content takes over once it exceeds the floor.
   const dialogRect = useMemo(() => {
     const pad = dialogViewportPadding
-    const maxW = window.innerWidth - pad * 2
-    const maxH = window.innerHeight - pad * 2
+    const maxW = viewport.width - pad * 2
+    const maxH = viewport.height - pad * 2
 
     if (!measured) {
       // Before measurement completes, default to card rect (no premature animation)
@@ -224,33 +286,38 @@ export function FolderCardExpanded({
 
     const finalWidth = Math.min(Math.max(measured.width, minW), maxW)
     const finalHeight = Math.min(Math.max(measured.height, minH), maxH)
-    const finalLeft = (window.innerWidth - finalWidth) / 2
-    const finalTop = Math.max(pad, (window.innerHeight - finalHeight) / 2)
+    const finalLeft = (viewport.width - finalWidth) / 2
+    const finalTop = Math.max(pad, (viewport.height - finalHeight) / 2)
     return { finalWidth, finalHeight, finalLeft, finalTop }
-  }, [measured, dialogViewportPadding, cardRect])
+  }, [measured, dialogViewportPadding, cardRect, viewport])
 
   const { finalWidth, finalHeight, finalLeft, finalTop } = dialogRect
   const springTransition = springConfig
+
+  // Stable close for renderDetail so measurement + visible copies share the same reference
+  const stableOnClose = useCallback(() => onClose(), [onClose])
 
   return (
     <Fragment>
       {/* Hidden measurement container -- renders content off-screen to measure natural size.
           Uses fit-content width so block/flex layouts size naturally within the max-width
-          constraint rather than collapsing to minimum intrinsic width. */}
+          constraint rather than collapsing to minimum intrinsic width.
+          Marked inert + aria-hidden so assistive technology and focus ignore it. */}
       <div
         ref={measureRef}
+        aria-hidden="true"
         style={{
           visibility: 'hidden',
           position: 'fixed',
           top: 0,
           left: 0,
           pointerEvents: 'none',
-          maxWidth: `${window.innerWidth - dialogViewportPadding * 2}px`,
+          maxWidth: `${viewport.width - dialogViewportPadding * 2}px`,
           width: 'fit-content',
           zIndex: -1,
         }}
       >
-        {renderDetail(onClose)}
+        {renderDetail(stableOnClose)}
       </div>
 
       {/* Backdrop: fades in/out independently */}
@@ -280,7 +347,7 @@ export function FolderCardExpanded({
             so it doesn't drift when the FLIP container changes size */}
         <motion.div
           data-fc-lid-rotator=""
-          transformTemplate={(_, generated) => `perspective(1800px) ${generated}`}
+          transformTemplate={(_, generated) => `perspective(${perspective}px) ${generated}`}
           style={{ transformOrigin: hinge.transformOrigin }}
           initial={{ [hinge.axis]: initialAngle }}
           animate={{ [hinge.axis]: finalOpenAngle }}
@@ -366,7 +433,11 @@ export function FolderCardExpanded({
 
       {/* Dialog container: springs from card position to content-measured overlay */}
       <motion.div
+        ref={dialogRef}
         data-fc-dialog=""
+        role="dialog"
+        aria-modal="true"
+        tabIndex={-1}
         className={dialogClassName || undefined}
         initial={{
           left: cardRect.left,
@@ -399,7 +470,7 @@ export function FolderCardExpanded({
           animate={detailControls}
           exit={{ opacity: 0, transition: { duration: exitDuration } }}
         >
-          {renderDetail(onClose)}
+          {renderDetail(stableOnClose)}
         </motion.div>
       </motion.div>
     </Fragment>

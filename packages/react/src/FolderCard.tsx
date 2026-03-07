@@ -8,10 +8,6 @@ import { getHingeConfig, resolveHingeSide } from './hinge'
 import { DEFAULT_PERSPECTIVE } from './constants'
 import type { FolderCardProps } from './types'
 
-function cn(...classes: (string | undefined | false | null)[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
 export function FolderCard({
   id,
   renderLid,
@@ -39,6 +35,7 @@ export function FolderCard({
   const [tabSize, setTabSize] = useState({ width: 0, height: 0 })
   const [cardRadius, setCardRadius] = useState(16)
 
+  const hasTab = !!renderTab
   const resolvedSide = resolveHingeSide(hingeSide, cardSize.width, cardSize.height)
   const hinge = getHingeConfig(resolvedSide)
 
@@ -80,11 +77,11 @@ export function FolderCard({
     if (liveRadius && sentinelEl) ro.observe(sentinelEl)
 
     return () => ro.disconnect()
-  }, [renderTab, liveRadius])
+  }, [hasTab, liveRadius])
 
   // Generate mask and notch border dynamically from measured values
   const { panelMask, notchBorder } = useMemo(() => {
-    if (!renderTab || cardSize.width === 0 || tabSize.width === 0) return { panelMask: null, notchBorder: null }
+    if (!hasTab || cardSize.width === 0 || tabSize.width === 0) return { panelMask: null, notchBorder: null }
     const maskParams = {
       cardWidth: cardSize.width,
       cardHeight: cardSize.height,
@@ -98,7 +95,7 @@ export function FolderCard({
       panelMask: buildPanelMask(maskParams),
       notchBorder: buildPanelBorder(maskParams),
     }
-  }, [renderTab, cardSize.width, cardSize.height, tabSize.width, tabSize.height, notchPosition, notchOuterRadius, notchInnerRadius, cardRadius])
+  }, [hasTab, cardSize.width, cardSize.height, tabSize.width, tabSize.height, notchPosition, notchOuterRadius, notchInnerRadius, cardRadius])
 
   const { stiffness, damping } = config.springConfig
   const angleBase = useMotionValue(hinge.restAngle)
@@ -155,9 +152,21 @@ export function FolderCard({
         onClick={() => {
           hoverYBase.jump(0)
           const rect = wrapperRef.current?.getBoundingClientRect()
-          if (rect) open(id, rect, angle.get(), renderLid, renderDetail, renderTab, panelMask, notchBorder, resolvedSide, notchPosition)
+          if (rect) open({
+            id,
+            rect,
+            initialAngle: angle.get(),
+            perspective,
+            renderLid,
+            renderDetail,
+            renderTab,
+            panelMask,
+            notchBorder,
+            hingeSide: resolvedSide,
+            notchPosition,
+          })
         }}
-        className={cn('group', className)}
+        className={['group', className].filter(Boolean).join(' ')}
         whileHover={{
           boxShadow: 'var(--fc-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))',
         }}

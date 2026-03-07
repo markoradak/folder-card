@@ -4,6 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
+  useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -20,10 +23,25 @@ import {
 } from './constants'
 import type { FolderCardGroupProps, HingeSide, NotchPosition } from './types'
 
+export interface OpenCardParams {
+  id: string
+  rect: DOMRect
+  initialAngle: number
+  perspective: number
+  renderLid: () => ReactNode
+  renderDetail: (close: () => void) => ReactNode
+  renderTab?: () => ReactNode
+  panelMask?: string | null
+  notchBorder?: string | null
+  hingeSide?: HingeSide
+  notchPosition?: NotchPosition
+}
+
 interface SelectedCard {
   id: string
   rect: DOMRect
   initialAngle: number
+  perspective: number
   renderLid: () => ReactNode
   renderDetail: (close: () => void) => ReactNode
   renderTab?: () => ReactNode
@@ -36,18 +54,7 @@ interface SelectedCard {
 interface FolderCardContextValue {
   selectedId: string | null
   exitingId: string | null
-  open: (
-    id: string,
-    rect: DOMRect,
-    initialAngle: number,
-    renderLid: () => ReactNode,
-    renderDetail: (close: () => void) => ReactNode,
-    renderTab?: () => ReactNode,
-    panelMask?: string | null,
-    notchBorder?: string | null,
-    hingeSide?: HingeSide,
-    notchPosition?: NotchPosition,
-  ) => void
+  open: (params: OpenCardParams) => void
   close: () => void
   config: FolderCardExpandedConfig
 }
@@ -77,7 +84,10 @@ export function FolderCardGroup({
   const [selected, setSelected] = useState<SelectedCard | null>(null)
   const [exitingId, setExitingId] = useState<string | null>(null)
 
-  const config: FolderCardExpandedConfig = {
+  const stiffness = springConfig?.stiffness ?? DEFAULT_SPRING_CONFIG.stiffness
+  const damping = springConfig?.damping ?? DEFAULT_SPRING_CONFIG.damping
+
+  const config = useMemo<FolderCardExpandedConfig>(() => ({
     dialogViewportPadding,
     contentRevealDelay,
     openRotateX,
@@ -85,58 +95,66 @@ export function FolderCardGroup({
     exitDuration,
     fadeLid,
     springConfig: {
-      type: 'spring',
-      stiffness: springConfig?.stiffness ?? DEFAULT_SPRING_CONFIG.stiffness,
-      damping: springConfig?.damping ?? DEFAULT_SPRING_CONFIG.damping,
+      type: 'spring' as const,
+      stiffness,
+      damping,
       restDelta: 0.01,
       restSpeed: 0.5,
     },
     backdropClassName,
     dialogClassName,
-  }
+  }), [dialogViewportPadding, contentRevealDelay, openRotateX, backdropDuration, exitDuration, fadeLid, stiffness, damping, backdropClassName, dialogClassName])
 
-  const open = useCallback(
-    (
-      id: string,
-      rect: DOMRect,
-      initialAngle: number,
-      renderLid: () => ReactNode,
-      renderDetail: (close: () => void) => ReactNode,
-      renderTab?: () => ReactNode,
-      panelMask?: string | null,
-      notchBorder?: string | null,
-      hingeSide?: HingeSide,
-      notchPosition?: NotchPosition,
-    ) => {
-      setSelected({
-        id,
-        rect,
-        initialAngle,
-        renderLid,
-        renderDetail,
-        renderTab,
-        panelMask: panelMask ?? null,
-        notchBorder: notchBorder ?? null,
-        hingeSide: hingeSide ?? 'bottom',
-        notchPosition: notchPosition ?? 'top-right',
-      })
-      onOpen?.(id)
-    },
-    [onOpen],
-  )
+  // Stable refs for callbacks so open/close identities never change
+  const onOpenRef = useRef(onOpen)
+  onOpenRef.current = onOpen
+  const onCloseRef = useRef(onCloseProp)
+  onCloseRef.current = onCloseProp
+
+  const open = useCallback((params: OpenCardParams) => {
+    setSelected({
+      id: params.id,
+      rect: params.rect,
+      initialAngle: params.initialAngle,
+      perspective: params.perspective,
+      renderLid: params.renderLid,
+      renderDetail: params.renderDetail,
+      renderTab: params.renderTab,
+      panelMask: params.panelMask ?? null,
+      notchBorder: params.notchBorder ?? null,
+      hingeSide: params.hingeSide ?? 'bottom',
+      notchPosition: params.notchPosition ?? 'top-right',
+    })
+    onOpenRef.current?.(params.id)
+  }, [])
 
   const close = useCallback(() => {
     setSelected(prev => {
       if (prev) {
         setExitingId(prev.id)
-        onCloseProp?.(prev.id)
+        onCloseRef.current?.(prev.id)
       }
       return null
     })
-  }, [onCloseProp])
+  }, [])
+
+  // Safety: clear exitingId if exit animation doesn't complete within 2s
+  useEffect(() => {
+    if (!exitingId) return
+    const t = setTimeout(() => setExitingId(null), 2000)
+    return () => clearTimeout(t)
+  }, [exitingId])
+
+  const ctxValue = useMemo<FolderCardContextValue>(() => ({
+    selectedId: selected?.id ?? null,
+    exitingId,
+    open,
+    close,
+    config,
+  }), [selected?.id, exitingId, open, close, config])
 
   return (
-    <FolderCardContext.Provider value={{ selectedId: selected?.id ?? null, exitingId, open, close, config }}>
+    <FolderCardContext.Provider value={ctxValue}>
       {children}
       <AnimatePresence onExitComplete={() => setExitingId(null)}>
         {selected && (
@@ -144,6 +162,7 @@ export function FolderCardGroup({
             key={selected.id}
             cardRect={selected.rect}
             initialAngle={selected.initialAngle}
+            perspective={selected.perspective}
             renderLid={selected.renderLid}
             renderDetail={selected.renderDetail}
             renderTab={selected.renderTab}
