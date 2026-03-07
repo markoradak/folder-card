@@ -1,8 +1,9 @@
 'use client'
 
-import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { motion, usePresence, useAnimationControls } from 'framer-motion'
 import { getHingeConfig } from './hinge'
+import { STAGGER_REPLAY_DELAY, TAB_RESHOW_DELAY } from './constants'
 import type { HingeSide, NotchPosition } from './types'
 
 const FOCUSABLE_SELECTOR =
@@ -28,7 +29,7 @@ export { lidContentVariants, lidItemVariants, detailContentVariants }
 export interface FolderCardExpandedConfig {
   dialogViewportPadding: number
   contentRevealDelay: number
-  openRotateX: number
+  openAngle?: number
   backdropDuration: number
   exitDuration: number
   fadeLid: boolean
@@ -48,6 +49,7 @@ interface FolderCardExpandedProps {
   notchBorder: string | null
   hingeSide: HingeSide
   notchPosition: NotchPosition
+  ariaLabel?: string
   onClose: () => void
   config: FolderCardExpandedConfig
 }
@@ -63,13 +65,14 @@ export function FolderCardExpanded({
   notchBorder,
   hingeSide,
   notchPosition,
+  ariaLabel,
   onClose,
   config,
 }: FolderCardExpandedProps) {
   const {
     dialogViewportPadding,
     contentRevealDelay,
-    openRotateX,
+    openAngle,
     backdropDuration,
     exitDuration,
     fadeLid,
@@ -80,10 +83,7 @@ export function FolderCardExpanded({
 
   const hinge = getHingeConfig(hingeSide)
 
-  // Determine the final open angle:
-  // For bottom hinge, honor the group-level openRotateX override if it differs from the default.
-  // For other hinge sides, always use the hinge config's openAngle.
-  const finalOpenAngle = hingeSide === 'bottom' ? openRotateX : hinge.openAngle
+  const finalOpenAngle = openAngle ?? hinge.openAngle
 
   const [isPresent, safeToRemove] = usePresence()
   const isPresentRef = useRef(true)
@@ -97,7 +97,11 @@ export function FolderCardExpanded({
   const [tabHidden, setTabHidden] = useState(false)
 
   // Track viewport size so the dialog repositions on resize
-  const [viewport, setViewport] = useState({ width: window.innerWidth, height: window.innerHeight })
+  const [viewport, setViewport] = useState(() =>
+    typeof window !== 'undefined'
+      ? { width: window.innerWidth, height: window.innerHeight }
+      : { width: 0, height: 0 }
+  )
 
   useEffect(() => {
     function handleResize() {
@@ -127,7 +131,7 @@ export function FolderCardExpanded({
   useEffect(() => {
     if (!isPresent) {
       lidControls.set('hidden')
-      const t = setTimeout(() => lidControls.start('visible'), 150)
+      const t = setTimeout(() => lidControls.start('visible'), STAGGER_REPLAY_DELAY)
       return () => clearTimeout(t)
     }
   }, [isPresent, lidControls])
@@ -135,7 +139,7 @@ export function FolderCardExpanded({
   // Fade tab content back in on close (with delay so lid settles first)
   useEffect(() => {
     if (!isPresent) {
-      const t = setTimeout(() => setTabHidden(false), 300)
+      const t = setTimeout(() => setTabHidden(false), TAB_RESHOW_DELAY)
       return () => clearTimeout(t)
     }
   }, [isPresent])
@@ -181,7 +185,7 @@ export function FolderCardExpanded({
   // Close on Escape
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape' && !e.defaultPrevented) onClose()
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
@@ -294,9 +298,6 @@ export function FolderCardExpanded({
   const { finalWidth, finalHeight, finalLeft, finalTop } = dialogRect
   const springTransition = springConfig
 
-  // Stable close for renderDetail so measurement + visible copies share the same reference
-  const stableOnClose = useCallback(() => onClose(), [onClose])
-
   return (
     <Fragment>
       {/* Hidden measurement container -- renders content off-screen to measure natural size.
@@ -317,7 +318,7 @@ export function FolderCardExpanded({
           zIndex: -1,
         }}
       >
-        {renderDetail(stableOnClose)}
+        {renderDetail(onClose)}
       </div>
 
       {/* Backdrop: fades in/out independently */}
@@ -437,6 +438,7 @@ export function FolderCardExpanded({
         data-fc-dialog=""
         role="dialog"
         aria-modal="true"
+        aria-label={ariaLabel}
         tabIndex={-1}
         className={dialogClassName || undefined}
         initial={{
@@ -470,7 +472,7 @@ export function FolderCardExpanded({
           animate={detailControls}
           exit={{ opacity: 0, transition: { duration: exitDuration } }}
         >
-          {renderDetail(stableOnClose)}
+          {renderDetail(onClose)}
         </motion.div>
       </motion.div>
     </Fragment>

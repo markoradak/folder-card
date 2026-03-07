@@ -18,8 +18,8 @@ import {
   DEFAULT_DIALOG_VIEWPORT_PADDING,
   DEFAULT_EXIT_DURATION,
   DEFAULT_FADE_LID,
-  DEFAULT_OPEN_ROTATE_X,
   DEFAULT_SPRING_CONFIG,
+  EXIT_SAFETY_TIMEOUT,
 } from './constants'
 import type { FolderCardGroupProps, HingeSide, NotchPosition } from './types'
 
@@ -35,6 +35,7 @@ export interface OpenCardParams {
   notchBorder?: string | null
   hingeSide?: HingeSide
   notchPosition?: NotchPosition
+  ariaLabel?: string
 }
 
 interface SelectedCard {
@@ -49,6 +50,7 @@ interface SelectedCard {
   notchBorder: string | null
   hingeSide: HingeSide
   notchPosition: NotchPosition
+  ariaLabel?: string
 }
 
 interface FolderCardContextValue {
@@ -71,7 +73,7 @@ export function FolderCardGroup({
   children,
   dialogViewportPadding = DEFAULT_DIALOG_VIEWPORT_PADDING,
   contentRevealDelay = DEFAULT_CONTENT_REVEAL_DELAY,
-  openRotateX = DEFAULT_OPEN_ROTATE_X,
+  openAngle,
   backdropDuration = DEFAULT_BACKDROP_DURATION,
   exitDuration = DEFAULT_EXIT_DURATION,
   fadeLid = DEFAULT_FADE_LID,
@@ -90,7 +92,7 @@ export function FolderCardGroup({
   const config = useMemo<FolderCardExpandedConfig>(() => ({
     dialogViewportPadding,
     contentRevealDelay,
-    openRotateX,
+    openAngle,
     backdropDuration,
     exitDuration,
     fadeLid,
@@ -103,7 +105,7 @@ export function FolderCardGroup({
     },
     backdropClassName,
     dialogClassName,
-  }), [dialogViewportPadding, contentRevealDelay, openRotateX, backdropDuration, exitDuration, fadeLid, stiffness, damping, backdropClassName, dialogClassName])
+  }), [dialogViewportPadding, contentRevealDelay, openAngle, backdropDuration, exitDuration, fadeLid, stiffness, damping, backdropClassName, dialogClassName])
 
   // Stable refs for callbacks so open/close identities never change
   const onOpenRef = useRef(onOpen)
@@ -124,6 +126,7 @@ export function FolderCardGroup({
       notchBorder: params.notchBorder ?? null,
       hingeSide: params.hingeSide ?? 'bottom',
       notchPosition: params.notchPosition ?? 'top-right',
+      ariaLabel: params.ariaLabel,
     })
     onOpenRef.current?.(params.id)
   }, [])
@@ -141,7 +144,7 @@ export function FolderCardGroup({
   // Safety: clear exitingId if exit animation doesn't complete within 2s
   useEffect(() => {
     if (!exitingId) return
-    const t = setTimeout(() => setExitingId(null), 2000)
+    const t = setTimeout(() => setExitingId(null), EXIT_SAFETY_TIMEOUT)
     return () => clearTimeout(t)
   }, [exitingId])
 
@@ -170,6 +173,7 @@ export function FolderCardGroup({
             notchBorder={selected.notchBorder}
             hingeSide={selected.hingeSide}
             notchPosition={selected.notchPosition}
+            ariaLabel={selected.ariaLabel}
             onClose={close}
             config={config}
           />

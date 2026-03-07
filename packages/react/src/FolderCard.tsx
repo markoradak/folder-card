@@ -5,7 +5,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useFolderCard } from './FolderCardGroup'
 import { buildPanelMask, buildPanelBorder } from './mask'
 import { getHingeConfig, resolveHingeSide } from './hinge'
-import { DEFAULT_PERSPECTIVE } from './constants'
+import { DEFAULT_PERSPECTIVE, HOVER_LIFT_Y, SETTLE_TIMEOUT } from './constants'
 import type { FolderCardProps } from './types'
 
 export function FolderCard({
@@ -21,6 +21,7 @@ export function FolderCard({
   notchOuterRadius,
   notchInnerRadius,
   liveRadius = false,
+  ariaLabel,
 }: FolderCardProps) {
   const { selectedId, exitingId, open, config } = useFolderCard()
   const isSelected = selectedId === id
@@ -118,7 +119,7 @@ export function FolderCard({
       hoverYBase.set(0)
       angleBase.set(hinge.restAngle)
     } else if (settlingRef.current) {
-      const t = setTimeout(() => { settlingRef.current = false }, 500)
+      const t = setTimeout(() => { settlingRef.current = false }, SETTLE_TIMEOUT)
       return () => clearTimeout(t)
     }
   }, [isSelected, hoverYBase, angleBase, hinge.restAngle])
@@ -142,7 +143,7 @@ export function FolderCard({
         onMouseEnter={() => {
           if (settlingRef.current) return
           angleBase.set(hinge.hoverAngle)
-          hoverYBase.set(-4)
+          hoverYBase.set(HOVER_LIFT_Y)
         }}
         onMouseLeave={() => {
           if (settlingRef.current) return
@@ -164,8 +165,10 @@ export function FolderCard({
             notchBorder,
             hingeSide: resolvedSide,
             notchPosition,
+            ariaLabel,
           })
         }}
+        aria-expanded={isSelected}
         className={['group', className].filter(Boolean).join(' ')}
         whileHover={{
           boxShadow: 'var(--fc-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))',

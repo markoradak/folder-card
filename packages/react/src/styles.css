@@ -56,10 +56,6 @@
   transition-timing-function: var(--fc-transition-easing);
 }
 
-[data-fc-card]:hover {
-  box-shadow: var(--fc-shadow-lg);
-}
-
 [data-fc-card]:focus-visible {
   box-shadow: 0 0 0 2px var(--fc-card-bg), 0 0 0 4px var(--fc-focus-ring);
 }

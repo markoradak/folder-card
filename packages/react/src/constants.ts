@@ -9,10 +9,14 @@ export const DEFAULT_SPRING_CONFIG = {
 
 export const DEFAULT_DIALOG_VIEWPORT_PADDING = 32
 export const DEFAULT_CONTENT_REVEAL_DELAY = 200
-export const DEFAULT_OPEN_ROTATE_X = -100
-export const DEFAULT_HOVER_ROTATE_X = -30
-export const DEFAULT_REST_ROTATE_X = -20
 export const DEFAULT_PERSPECTIVE = 1800
 export const DEFAULT_BACKDROP_DURATION = 0.25
 export const DEFAULT_EXIT_DURATION = 0.15
 export const DEFAULT_FADE_LID = false
+
+// Internal timing constants
+export const HOVER_LIFT_Y = -4
+export const SETTLE_TIMEOUT = 500
+export const STAGGER_REPLAY_DELAY = 150
+export const TAB_RESHOW_DELAY = 300
+export const EXIT_SAFETY_TIMEOUT = 2000

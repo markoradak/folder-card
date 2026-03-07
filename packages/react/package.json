@@ -14,7 +14,7 @@
         "default": "./dist/index.js"
       },
       "require": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
     },
@@ -29,16 +29,17 @@
     "*.css"
   ],
   "scripts": {
-    "build": "tsup && tsc --emitDeclarationOnly --outDir dist && cp src/styles.css dist/styles.css",
+    "build": "tsup && cp src/styles.css dist/styles.css",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
+    "framer-motion": ">=11.0.0",
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0",
-    "framer-motion": ">=11.0.0"
+    "react-dom": ">=18.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
@@ -47,7 +48,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "keywords": [
     "react",
