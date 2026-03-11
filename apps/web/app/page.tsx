@@ -15,6 +15,7 @@ const BASIC_EXAMPLE = `import {
   FolderCard,
   FolderCardItem,
 } from "@markoradak/folder-card";
+import "@markoradak/folder-card/styles";
 
 function MyCards() {
   return (
@@ -87,10 +88,12 @@ const THEMING_EXAMPLE = `:root {
   --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-.dark {
-  --fc-card-bg: #1a1a1f;
-  --fc-foreground: #ffffff;
-  --fc-border: rgba(255, 255, 255, 0.08);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fc-card-bg: #111111;
+    --fc-foreground: #f5f5f5;
+    --fc-border: rgba(255, 255, 255, 0.06);
+  }
 }`;
 
 const FEATURES = [
