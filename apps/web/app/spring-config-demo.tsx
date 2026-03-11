@@ -179,6 +179,7 @@ export function SpringConfigDemo() {
         >
           <FolderCard
             id={spring.id}
+            className="group"
             liveRadius
             renderLid={() => <CardFace spring={spring} />}
             renderDetail={(close) => (

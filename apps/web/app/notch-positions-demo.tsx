@@ -150,6 +150,7 @@ export function NotchPositionsDemo() {
           <div className="w-full max-w-md">
             <FolderCard
               id="notch-demo"
+              className="group"
               liveRadius
               notchPosition={position}
               hingeSide={OPPOSITE_HINGE[position]}

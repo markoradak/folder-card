@@ -51,6 +51,7 @@ export function AutoHingeDemo() {
           <div className="w-72">
             <FolderCard
               id="auto-hinge-card"
+              className="group"
               liveRadius
               renderLid={() => (
                 <div className="flex flex-col gap-4 p-5">

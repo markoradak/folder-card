@@ -194,6 +194,7 @@ export function HeroDemo() {
           <FolderCard
             key={project.id}
             id={project.id}
+            className="group"
             liveRadius
             renderLid={() => <CardFace project={project} />}
             renderDetail={(close) => (

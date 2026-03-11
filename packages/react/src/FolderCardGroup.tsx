@@ -54,7 +54,7 @@ interface SelectedCard {
   ariaLabel?: string
 }
 
-interface FolderCardContextValue {
+export interface FolderCardContextValue {
   selectedId: string | null
   exitingId: string | null
   open: (params: OpenCardParams) => void
@@ -86,6 +86,8 @@ export function FolderCardGroup({
   onClose: onCloseProp,
 }: FolderCardGroupProps) {
   const [selected, setSelected] = useState<SelectedCard | null>(null)
+  const selectedRef = useRef<SelectedCard | null>(null)
+  selectedRef.current = selected
   const [exitingId, setExitingId] = useState<string | null>(null)
   const prefersReducedMotion = useReducedMotion() ?? false
 
@@ -133,13 +135,14 @@ export function FolderCardGroup({
   }, [])
 
   const close = useCallback(() => {
-    setSelected(prev => {
-      if (prev) {
-        setExitingId(prev.id)
-        onCloseRef.current?.(prev.id)
-      }
-      return null
-    })
+    const prev = selectedRef.current
+    if (!prev) return
+    // Clear ref immediately so rapid double-calls (e.g. Escape + backdrop click
+    // in the same frame) don't fire the onClose callback twice.
+    selectedRef.current = null
+    setSelected(null)
+    setExitingId(prev.id)
+    onCloseRef.current?.(prev.id)
   }, [])
 
   // Safety: clear exitingId if exit animation doesn't complete within 2s

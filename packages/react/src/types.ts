@@ -28,7 +28,7 @@ export interface FolderCardGroupProps {
   backdropDuration?: number
   /** Duration (s) of the content fade-out on close. Default: 0.15 */
   exitDuration?: number
-  /** Maximum target width (px) the dialog scales to when content is smaller than this floor. Default: 1000 */
+  /** Minimum target width (px) the dialog will try to reach. Content wider than this grows freely up to the viewport. Default: 1000 */
   dialogMinWidth?: number
   backdropClassName?: string
   dialogClassName?: string
@@ -46,7 +46,9 @@ export interface FolderCardProps {
   renderDetail: (close: () => void) => ReactNode
   /** Renders content inside the tab notch. When provided, the notch mask is derived from the tab's measured dimensions. */
   renderTab?: () => ReactNode
+  /** Class name applied to the card button element (`[data-fc-card]`). For layout styling on the outer wrapper, use `style`. */
   className?: string
+  /** Inline styles applied to the outer wrapper element. Use for layout concerns (grid placement, sizing). */
   style?: CSSProperties
   /** Perspective depth (px) for the 3D lid rotation. Default: 1800 */
   perspective?: number

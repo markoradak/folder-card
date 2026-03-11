@@ -130,6 +130,7 @@ export function FadeLidDemo() {
         <FolderCardGroup key={mode.id} fadeLid={mode.fadeLid}>
           <FolderCard
             id={mode.id}
+            className="group"
             liveRadius
             renderLid={() => <CardFace mode={mode} />}
             renderDetail={(close) => (

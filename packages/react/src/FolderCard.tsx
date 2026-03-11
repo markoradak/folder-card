@@ -98,9 +98,9 @@ export function FolderCard({
     }
   }, [hasTab, cardSize.width, cardSize.height, tabSize.width, tabSize.height, notchPosition, notchOuterRadius, notchInnerRadius, cardRadius])
 
-  const { stiffness, damping } = config.springConfig
+  const { stiffness, damping, restDelta, restSpeed } = config.springConfig
   const angleBase = useMotionValue(hinge.restAngle)
-  const angle = useSpring(angleBase, { stiffness, damping })
+  const angle = useSpring(angleBase, { stiffness, damping, restDelta, restSpeed })
 
   // Hover lift -- driven by framer-motion so it coordinates with the FLIP spring
   const hoverYBase = useMotionValue(0)
@@ -169,7 +169,7 @@ export function FolderCard({
           })
         }}
         aria-expanded={isSelected}
-        className={['group', className].filter(Boolean).join(' ')}
+        className={className}
         whileHover={config.reducedMotion ? {} : {
           boxShadow: 'var(--fc-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))',
         }}
@@ -178,7 +178,7 @@ export function FolderCard({
         {/* Sentinel: tracks --fc-radius changes so ResizeObserver re-reads border-radius */}
         <div
           ref={radiusSentinelRef}
-          aria-hidden
+          aria-hidden="true"
           style={{ position: 'absolute', top: 0, left: 0, width: 'var(--fc-radius, 1rem)', height: 'var(--fc-radius, 1rem)', visibility: 'hidden', pointerEvents: 'none' }}
         />
 
@@ -195,7 +195,7 @@ export function FolderCard({
               <div
                 data-fc-lid-overlay=""
                 style={{
-                  backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
+                  backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)))',
                   ...buildMaskStyle(panelMask),
                 }}
               />
@@ -218,7 +218,7 @@ export function FolderCard({
               <div
                 data-fc-lid-overlay=""
                 style={{
-                  backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
+                  backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)))',
                   border: '1px solid var(--fc-lid-border, transparent)',
                 }}
               />
@@ -242,7 +242,7 @@ export function FolderCard({
               style={{
                 transform: hinge.backFaceTransform,
                 background:
-                  `var(--fc-lid-back, linear-gradient(${hinge.gradientDirection}, color-mix(in srgb, var(--color-foreground, #0a0a0a) 6%, var(--color-card, #fff)), transparent 50%))`,
+                  `var(--fc-lid-back, linear-gradient(${hinge.gradientDirection}, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)), transparent 50%))`,
               }}
             />
         </motion.div>

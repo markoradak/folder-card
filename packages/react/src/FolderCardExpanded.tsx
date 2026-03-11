@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { motion, usePresence, useAnimationControls } from 'framer-motion'
+import { motion, usePresence, useAnimationControls, useMotionValue } from 'framer-motion'
 import { getHingeConfig } from './hinge'
 import { buildMaskStyle } from './mask'
 import { STAGGER_REPLAY_DELAY, TAB_RESHOW_DELAY } from './constants'
@@ -101,6 +101,18 @@ export function FolderCardExpanded({
   const [measured, setMeasured] = useState<{ width: number; height: number } | null>(null)
   const [tabHidden, setTabHidden] = useState(false)
 
+  // Scroll compensation: a MotionValue that offsets the lid/dialog by the
+  // scroll delta during the exit animation. Using a MotionValue (not state)
+  // means the spring's exit targets stay stable — scroll updates bypass React
+  // rendering so onAnimationComplete fires normally when the spring settles.
+  const scrollInfoRef = useRef<{ target: HTMLElement; isBody: boolean; openY: number }>({
+    target: document.body,
+    isBody: true,
+    openY: typeof window !== 'undefined' ? window.scrollY : 0,
+  })
+  const scrollCompensateY = useMotionValue(0)
+  const exitSettledRef = useRef(false)
+
   // Track viewport size so the dialog repositions on resize
   const [viewport, setViewport] = useState(() =>
     typeof window !== 'undefined'
@@ -171,6 +183,10 @@ export function FolderCardExpanded({
   // Lock scroll on the nearest scrollable ancestor (not the body -- the page
   // may use an inner scroll container like <main class="overflow-y-auto">).
   // Compensate for scrollbar width to prevent layout shift.
+  // Unlock immediately when close is triggered (isPresent becomes false) so
+  // the page is scrollable during the exit animation.
+  const scrollLockRef = useRef<{ target: HTMLElement; prevOverflow: string; prevPaddingRight: string } | null>(null)
+
   useEffect(() => {
     const wrapper = measureRef.current
     let scrollParent: HTMLElement | null = null
@@ -200,11 +216,53 @@ export function FolderCardExpanded({
       target.style.paddingRight = `${scrollbarWidth}px`
     }
 
+    const isBody = target === document.body
+    scrollInfoRef.current = { target, isBody, openY: isBody ? window.scrollY : target.scrollTop }
+    scrollLockRef.current = { target, prevOverflow, prevPaddingRight }
+
     return () => {
       target.style.overflow = prevOverflow
       target.style.paddingRight = prevPaddingRight
+      scrollLockRef.current = null
     }
   }, [])
+
+  // Release scroll lock as soon as close is triggered, don't wait for unmount
+  useEffect(() => {
+    if (!isPresent && scrollLockRef.current) {
+      const { target, prevOverflow, prevPaddingRight } = scrollLockRef.current
+      target.style.overflow = prevOverflow
+      target.style.paddingRight = prevPaddingRight
+      scrollLockRef.current = null
+    }
+  }, [isPresent])
+
+  // Compensate for scroll during exit. Updates a MotionValue (not React state)
+  // so the spring exit targets stay stable and onAnimationComplete fires when
+  // the spring settles. Once settled, exitSettledRef stops further updates.
+  useEffect(() => {
+    if (isPresent) return
+    const { target, isBody, openY } = scrollInfoRef.current
+    const scrollElement = isBody ? window : target
+
+    let rafId = 0
+    function handleScroll() {
+      if (exitSettledRef.current) return
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        if (exitSettledRef.current) return
+        const currentY = isBody ? window.scrollY : target.scrollTop
+        scrollCompensateY.set(-(currentY - openY))
+      })
+    }
+
+    handleScroll()
+    scrollElement.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      scrollElement.removeEventListener('scroll', handleScroll)
+      cancelAnimationFrame(rafId)
+    }
+  }, [isPresent, scrollCompensateY])
 
   // Close on Escape
   useEffect(() => {
@@ -252,7 +310,7 @@ export function FolderCardExpanded({
     document.addEventListener('keydown', handleTab)
     return () => {
       document.removeEventListener('keydown', handleTab)
-      previouslyFocused?.focus()
+      previouslyFocused?.focus({ preventScroll: true })
     }
   }, [])
 
@@ -356,10 +414,13 @@ export function FolderCardExpanded({
         onClick={onClose}
       />
 
-      {/* Front-face lid -- outer div springs position/size with the dialog; inner div rotates */}
+      {/* Front-face lid -- outer div springs position/size with the dialog; inner div rotates.
+          Scroll compensation during exit is layered via the y MotionValue (translateY).
+          This keeps the exit targets stable so the spring settles and onAnimationComplete fires. */}
       <motion.div
         data-fc-lid=""
         data-fc-lid-expanded=""
+        style={{ y: scrollCompensateY }}
         initial={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}
         animate={{ left: finalLeft, top: finalTop, width: finalWidth, height: finalHeight, ...(fadeLid ? { opacity: 0 } : {}) }}
         exit={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}
@@ -390,7 +451,7 @@ export function FolderCardExpanded({
             <div
               data-fc-lid-overlay=""
               style={{
-                backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--color-foreground) 6%, var(--color-card)))',
+                backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)))',
                 ...(panelMask ? buildMaskStyle(panelMask) : {}),
               }}
             />
@@ -438,7 +499,7 @@ export function FolderCardExpanded({
             style={{
               transform: hinge.backFaceTransform,
               background:
-                `var(--fc-lid-back, linear-gradient(${hinge.gradientDirection}, color-mix(in srgb, var(--color-foreground, #0a0a0a) 6%, var(--color-card, #fff)), transparent 50%))`,
+                `var(--fc-lid-back, linear-gradient(${hinge.gradientDirection}, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)), transparent 50%))`,
             }}
           />
         </motion.div>
@@ -453,6 +514,7 @@ export function FolderCardExpanded({
         aria-label={ariaLabel}
         tabIndex={-1}
         className={dialogClassName || undefined}
+        style={{ y: scrollCompensateY }}
         initial={{
           left: cardRect.left,
           top: cardRect.top,
@@ -473,7 +535,10 @@ export function FolderCardExpanded({
         }}
         transition={springTransition}
         onAnimationComplete={() => {
-          if (!isPresentRef.current) safeToRemove?.()
+          if (!isPresentRef.current) {
+            exitSettledRef.current = true
+            safeToRemove?.()
+          }
         }}
       >
         {/* Content: staggers in after container settles, fades out as a whole on exit */}

@@ -1,5 +1,5 @@
 export { FolderCardGroup, useFolderCard } from './FolderCardGroup'
-export type { OpenCardParams } from './FolderCardGroup'
+export type { OpenCardParams, FolderCardContextValue } from './FolderCardGroup'
 export { FolderCard } from './FolderCard'
 export { buildPanelMask, buildPanelBorder, buildMaskStyle } from './mask'
 export type { PanelMaskParams } from './mask'

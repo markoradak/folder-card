@@ -165,6 +165,7 @@ export function RecipeCardsDemo() {
           <FolderCard
             key={recipe.id}
             id={recipe.id}
+            className="group"
             liveRadius
             hingeSide="left"
             notchPosition="bottom-right"

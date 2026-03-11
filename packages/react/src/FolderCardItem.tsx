@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 export const itemVariants = {
   hidden: { opacity: 0, y: 6 },
@@ -11,7 +11,7 @@ export const itemVariants = {
 export interface FolderCardItemProps {
   children: ReactNode
   className?: string
-  style?: React.CSSProperties
+  style?: CSSProperties
 }
 
 export function FolderCardItem({ children, className, style }: FolderCardItemProps) {

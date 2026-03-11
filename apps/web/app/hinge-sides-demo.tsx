@@ -58,6 +58,7 @@ export function HingeSidesDemo() {
           <FolderCard
             key={hinge.id}
             id={hinge.id}
+            className="group"
             liveRadius
             hingeSide={hinge.side}
             renderLid={() => (
