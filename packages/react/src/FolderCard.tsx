@@ -190,15 +190,22 @@ export function FolderCard({
           transformTemplate={(_, generated) => `perspective(${perspective}px) ${generated}`}
           style={{ transformOrigin: hinge.transformOrigin, [hinge.axis]: angle }}
         >
-            {/* Tinted lid overlay -- always rendered so the lid color is visible on
-                first paint (SSR). The SVG mask is applied once measurements are ready;
-                until then the overlay covers the full rectangle (no notch cutout). */}
+            {/* Tinted lid overlay -- always rendered so it is part of the DOM
+                from the first paint.  For tabbed cards the SVG mask can only be
+                computed after DOM measurement, so the overlay starts at opacity 0
+                and transitions to 1 once the mask is ready.  On CSR this happens
+                inside useLayoutEffect (before the first browser paint) so the
+                transition never fires and the user sees the final state instantly.
+                On SSR→hydration the server HTML is painted at opacity 0 first;
+                once JS loads the overlay fades in smoothly with the correct mask
+                shape already applied — no intermediate "wrong notch" state. */}
             <div
               data-fc-lid-overlay=""
               style={{
                 backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)))',
                 ...(panelMask ? buildMaskStyle(panelMask) : {}),
                 ...(!renderTab ? { border: '1px solid var(--fc-lid-border, transparent)' } : {}),
+                ...(hasTab ? { opacity: panelMask ? 1 : 0, transition: 'opacity 0.15s ease-out' } : {}),
               }}
             />
 
@@ -210,6 +217,8 @@ export function FolderCard({
                 style={{
                   backgroundColor: 'var(--fc-lid-border, transparent)',
                   ...buildMaskStyle(notchBorder),
+                  opacity: panelMask ? 1 : 0,
+                  transition: 'opacity 0.15s ease-out',
                 }}
               />
             )}
