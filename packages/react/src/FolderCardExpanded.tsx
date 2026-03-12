@@ -409,7 +409,7 @@ export function FolderCardExpanded({
       <motion.div
         data-fc-backdrop=""
         className={backdropClassName || undefined}
-        style={{ pointerEvents: isPresent ? 'auto' : 'none' }}
+        style={{ pointerEvents: isPresent ? 'auto' : 'none', zIndex: isPresent ? 60 : undefined }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -423,7 +423,7 @@ export function FolderCardExpanded({
       <motion.div
         data-fc-lid=""
         data-fc-lid-expanded=""
-        style={{ y: scrollCompensateY }}
+        style={{ y: scrollCompensateY, zIndex: isPresent ? 75 : undefined }}
         initial={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}
         animate={{ left: finalLeft, top: finalTop, width: finalWidth, height: finalHeight, ...(fadeLid ? { opacity: 0 } : {}) }}
         exit={{ left: cardRect.left, top: cardRect.top, width: cardRect.width, height: cardRect.height, opacity: 1 }}
@@ -517,7 +517,7 @@ export function FolderCardExpanded({
         aria-label={ariaLabel}
         tabIndex={-1}
         className={dialogClassName || undefined}
-        style={{ y: scrollCompensateY, pointerEvents: isPresent ? 'auto' : 'none' }}
+        style={{ y: scrollCompensateY, pointerEvents: isPresent ? 'auto' : 'none', zIndex: isPresent ? 70 : undefined }}
         initial={{
           left: cardRect.left,
           top: cardRect.top,
