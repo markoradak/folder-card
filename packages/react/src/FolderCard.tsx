@@ -190,16 +190,17 @@ export function FolderCard({
           transformTemplate={(_, generated) => `perspective(${perspective}px) ${generated}`}
           style={{ transformOrigin: hinge.transformOrigin, [hinge.axis]: angle }}
         >
-            {/* L-shape tinted overlay with mask (only when renderTab provides a tab) */}
-            {panelMask && (
-              <div
-                data-fc-lid-overlay=""
-                style={{
-                  backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)))',
-                  ...buildMaskStyle(panelMask),
-                }}
-              />
-            )}
+            {/* Tinted lid overlay -- always rendered so the lid color is visible on
+                first paint (SSR). The SVG mask is applied once measurements are ready;
+                until then the overlay covers the full rectangle (no notch cutout). */}
+            <div
+              data-fc-lid-overlay=""
+              style={{
+                backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)))',
+                ...(panelMask ? buildMaskStyle(panelMask) : {}),
+                ...(!renderTab ? { border: '1px solid var(--fc-lid-border, transparent)' } : {}),
+              }}
+            />
 
             {/* Notch inner-edge border -- stroke-only SVG mask reveals the border color
                 along the curved notch boundary where the lid mask clips the regular border. */}
@@ -209,17 +210,6 @@ export function FolderCard({
                 style={{
                   backgroundColor: 'var(--fc-lid-border, transparent)',
                   ...buildMaskStyle(notchBorder),
-                }}
-              />
-            )}
-
-            {/* Full-rectangle tint when no tab is provided */}
-            {!renderTab && (
-              <div
-                data-fc-lid-overlay=""
-                style={{
-                  backgroundColor: 'var(--fc-lid, color-mix(in srgb, var(--fc-foreground, #0a0a0a) 6%, var(--fc-card-bg, #fff)))',
-                  border: '1px solid var(--fc-lid-border, transparent)',
                 }}
               />
             )}
