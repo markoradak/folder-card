@@ -403,10 +403,13 @@ export function FolderCardExpanded({
         {renderDetail(onClose)}
       </div>
 
-      {/* Backdrop: fades in/out independently */}
+      {/* Backdrop: fades in/out independently.
+          Pointer events are disabled during exit so cards underneath remain
+          clickable while the backdrop fades out. */}
       <motion.div
         data-fc-backdrop=""
         className={backdropClassName || undefined}
+        style={{ pointerEvents: isPresent ? 'auto' : 'none' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -514,7 +517,7 @@ export function FolderCardExpanded({
         aria-label={ariaLabel}
         tabIndex={-1}
         className={dialogClassName || undefined}
-        style={{ y: scrollCompensateY }}
+        style={{ y: scrollCompensateY, pointerEvents: isPresent ? 'auto' : 'none' }}
         initial={{
           left: cardRect.left,
           top: cardRect.top,

@@ -117,6 +117,8 @@ export function FolderCardGroup({
   onCloseRef.current = onCloseProp
 
   const open = useCallback((params: OpenCardParams) => {
+    // Clear any in-progress exit so the previous card reappears immediately
+    setExitingId(null)
     setSelected({
       id: params.id,
       rect: params.rect,
