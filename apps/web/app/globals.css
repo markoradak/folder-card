@@ -71,14 +71,14 @@ body {
 }
 
 /* Focus rings */
-button,
+button:not([data-fc-card]),
 a {
   outline: 2px solid transparent;
   outline-offset: 2px;
   transition: outline-color var(--fc-transition-duration) var(--fc-transition-easing);
 }
 
-button:focus-visible,
+button:not([data-fc-card]):focus-visible,
 a:focus-visible {
   outline-color: var(--fc-focus-ring);
 }
