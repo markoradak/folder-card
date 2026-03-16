@@ -182,6 +182,7 @@
   border: 1px solid var(--fc-border);
   background-color: var(--fc-card-bg);
   box-shadow: var(--fc-dialog-shadow);
+  outline: none;
 }
 
 /* ── Dialog content ───────────────────────────────────────────────── */

@@ -43,7 +43,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="flex h-8 w-8 items-center justify-center text-[#666] transition-colors hover:text-accent"
+      className="flex h-8 w-8 items-center justify-center rounded-lg text-[#666] transition-colors hover:text-accent"
       aria-label={`Switch to ${resolvedTheme === "light" ? "dark" : "light"} mode`}
     >
       {resolvedTheme === "light" ? (
