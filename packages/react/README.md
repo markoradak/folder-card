@@ -46,7 +46,7 @@ function App() {
 
 ## Features
 
-- **FLIP spring animation** — Cards spring from grid position to centered dialog using Framer Motion physics.
+- **FLIP spring animation** — Cards spring from grid position to centered dialog using Motion physics.
 - **3D lid rotation** — Perspective-correct rotation on any edge (bottom, top, left, right, or auto).
 - **SVG notch mask** — Folder-style tab cutouts at any corner or edge center with configurable radii.
 - **Render props API** — Full control over card face, detail content, and tab. No opinionated markup.
@@ -68,6 +68,7 @@ Wraps all cards and manages shared state (which card is open, spring config, etc
 | `backdropDuration` | `number` | `0.25` | Duration (s) of backdrop fade |
 | `exitDuration` | `number` | `0.15` | Duration (s) of content fade-out on close |
 | `fadeLid` | `boolean` | `false` | Fade lid out instead of 3D rotation |
+| `dialogMinWidth` | `number` | `1000` | Minimum target width (px) the dialog tries to reach. Content wider than this grows freely up to the viewport. |
 | `backdropClassName` | `string` | — | Class name for the backdrop element |
 | `dialogClassName` | `string` | — | Class name for the dialog element |
 | `onOpen` | `(id: string) => void` | — | Called when a card opens |
@@ -81,7 +82,7 @@ An individual card with a lid face and expandable detail.
 |------|------|---------|-------------|
 | `id` | `string` | required | Unique identifier |
 | `renderLid` | `() => ReactNode` | required | Card face / expanded lid content |
-| `renderDetail` | `(close: () => void) => ReactNode` | required | Expanded dialog content. Called twice (once for measurement, once for display) — keep side-effect-free. |
+| `renderDetail` | `(close: () => void) => ReactNode` | required | Expanded dialog content. Rendered into two React trees (a hidden measurement tree and the visible dialog) — every component inside mounts **twice**. Keep side-effect-free; lift data fetching and subscriptions to a parent. |
 | `renderTab` | `() => ReactNode` | — | Tab notch content |
 | `ariaLabel` | `string` | — | Accessible label for the expanded dialog |
 | `className` | `string` | — | Class name for the card button |
@@ -109,18 +110,21 @@ Import the base stylesheet and override variables to theme:
   --fc-card-bg: #ffffff;
   --fc-foreground: #0a0a0a;
   --fc-border: rgba(0, 0, 0, 0.1);
+  --fc-muted: rgba(0, 0, 0, 0.45);
   --fc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --fc-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
   --fc-backdrop-bg: rgba(0, 0, 0, 0.5);
   --fc-dialog-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-  --fc-lid: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
-  --fc-lid-border: transparent;
-  --fc-lid-back: /* gradient */;
   --fc-focus-ring: rgba(0, 0, 0, 0.2);
+  --fc-lid: color-mix(in srgb, var(--fc-foreground) 6%, var(--fc-card-bg));
+  --fc-lid-border: transparent;           /* advanced: fallback only */
+  --fc-lid-back: /* gradient */;          /* advanced: fallback only */
+  --fc-transition-duration: 300ms;
+  --fc-transition-easing: ease-out;
 }
 ```
 
-Dark mode is supported automatically via `prefers-color-scheme`, or override in a `.dark` selector.
+Dark mode is applied automatically via `@media (prefers-color-scheme: dark)`. To integrate with a class-based theme switcher (e.g. `next-themes`), override the variables inside your own `.dark` selector.
 
 ## License
 
