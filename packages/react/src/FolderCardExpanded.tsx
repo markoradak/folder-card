@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { motion, usePresence, useAnimationControls, useMotionValue } from 'framer-motion'
+import { motion, usePresence, useAnimationControls, useMotionValue } from 'motion/react'
 import { getHingeConfig } from './hinge'
 import { buildMaskStyle } from './mask'
 import { STAGGER_REPLAY_DELAY, TAB_RESHOW_DELAY } from './constants'
@@ -322,7 +322,7 @@ export function FolderCardExpanded({
   // Continuously measure the hidden container. A ResizeObserver handles both
   // the initial layout and subsequent size changes when async content loads
   // (e.g. data fetches that replace a loading skeleton with full content).
-  // framer-motion reactively springs to the updated animate targets.
+  // motion reactively springs to the updated animate targets.
   useLayoutEffect(() => {
     const el = measureRef.current
     if (!el) return

@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { AnimatePresence, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, useReducedMotion } from 'motion/react'
 import { FolderCardExpanded, type FolderCardExpandedConfig } from './FolderCardExpanded'
 import {
   DEFAULT_BACKDROP_DURATION,

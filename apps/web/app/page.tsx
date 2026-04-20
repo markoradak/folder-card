@@ -8,7 +8,7 @@ import { FadeLidDemo } from "./fade-lid-demo";
 import { CodeBlock } from "./code-block";
 import { ThemeToggle } from "./theme-toggle";
 
-const INSTALL_CODE = `npm install @markoradak/folder-card framer-motion`;
+const INSTALL_CODE = `npm install @markoradak/folder-card motion`;
 
 const BASIC_EXAMPLE = `import {
   FolderCardGroup,

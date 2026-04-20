@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useLayoutEffect, useEffect, useState, useMemo } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
+import { motion, useMotionValue, useSpring } from 'motion/react'
 import { useFolderCard } from './FolderCardGroup'
 import { buildPanelMask, buildPanelBorder, buildMaskStyle } from './mask'
 import { getHingeConfig, resolveHingeSide } from './hinge'
@@ -102,7 +102,7 @@ export function FolderCard({
   const angleBase = useMotionValue(hinge.restAngle)
   const angle = useSpring(angleBase, { stiffness, damping, restDelta, restSpeed })
 
-  // Hover lift -- driven by framer-motion so it coordinates with the FLIP spring
+  // Hover lift -- driven by motion so it coordinates with the FLIP spring
   const hoverYBase = useMotionValue(0)
   const hoverY = useSpring(hoverYBase, { stiffness: 400, damping: 28 })
 

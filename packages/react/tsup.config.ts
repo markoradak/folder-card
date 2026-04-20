@@ -8,7 +8,7 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom", "framer-motion"],
+  external: ["react", "react-dom", "motion", "motion/react"],
   treeshake: true,
   minify: false,
 });

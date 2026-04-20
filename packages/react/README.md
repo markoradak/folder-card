@@ -5,7 +5,7 @@ Animated folder-style cards for React. FLIP spring expansion, 3D lid rotation, S
 ## Install
 
 ```bash
-npm install @markoradak/folder-card framer-motion
+npm install @markoradak/folder-card motion
 ```
 
 ## Quick start
