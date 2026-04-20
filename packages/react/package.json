@@ -25,6 +25,9 @@
     "dist",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": [
     "*.css"
   ],
@@ -65,6 +68,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/markoradak/folder-card"
-  }
+    "url": "git+https://github.com/markoradak/folder-card.git"
+  },
+  "bugs": {
+    "url": "https://github.com/markoradak/folder-card/issues"
+  },
+  "homepage": "https://github.com/markoradak/folder-card#readme"
 }
