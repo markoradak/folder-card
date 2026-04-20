@@ -42,7 +42,15 @@ export interface FolderCardProps {
   id: string
   /** Renders content on the card face and on the expanded lid's front face. */
   renderLid: () => ReactNode
-  /** Renders content inside the expanded dialog. Receives `close` so callers can dismiss. Called twice (measurement + display) — keep side-effect-free. */
+  /**
+   * Renders content inside the expanded dialog. Receives `close` so callers can dismiss.
+   *
+   * Rendered into two React trees: a hidden measurement tree (for content-aware dialog
+   * sizing) and the visible dialog. This means the function is invoked twice per render
+   * AND every component inside it mounts twice — two hook instances, two `useEffect`
+   * runs, two data fetches if you fetch inline. Keep side-effect-free: lift data
+   * fetching, subscriptions, and refs to a parent component and pass values in.
+   */
   renderDetail: (close: () => void) => ReactNode
   /** Renders content inside the tab notch. When provided, the notch mask is derived from the tab's measured dimensions. */
   renderTab?: () => ReactNode
