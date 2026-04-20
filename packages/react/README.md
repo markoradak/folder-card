@@ -126,6 +126,29 @@ Import the base stylesheet and override variables to theme:
 
 Dark mode is applied automatically via `@media (prefers-color-scheme: dark)`. To integrate with a class-based theme switcher (e.g. `next-themes`), override the variables inside your own `.dark` selector.
 
+## Development
+
+This repository is a pnpm + Turborepo monorepo:
+
+```
+packages/
+  react/          @markoradak/folder-card — the published package
+apps/
+  web/            Next.js demo + documentation site
+```
+
+Requires Node 18+ and pnpm 10+.
+
+```bash
+pnpm install
+pnpm dev          # run the demo site + package in watch mode
+pnpm build        # build the package
+pnpm typecheck    # typecheck all workspaces
+
+cd packages/react
+pnpm test         # run the package test suite
+```
+
 ## License
 
 MIT
