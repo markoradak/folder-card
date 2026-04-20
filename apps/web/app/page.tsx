@@ -6,9 +6,10 @@ import { RecipeCardsDemo } from "./recipe-cards-demo";
 import { SpringConfigDemo } from "./spring-config-demo";
 import { FadeLidDemo } from "./fade-lid-demo";
 import { CodeBlock } from "./code-block";
+import { InstallCommand } from "./install-command";
 import { ThemeToggle } from "./theme-toggle";
 
-const INSTALL_CODE = `npm install @markoradak/folder-card motion`;
+const INSTALL_PKG = `@markoradak/folder-card motion`;
 
 const BASIC_EXAMPLE = `import {
   FolderCardGroup,
@@ -143,7 +144,7 @@ export default function Home() {
             3D lid rotation, SVG notch masks, and a render props API.
           </p>
 
-          <CodeBlock code={INSTALL_CODE} language="bash" />
+          <InstallCommand pkg={INSTALL_PKG} />
 
           <div className="flex items-center gap-3">
             <a
