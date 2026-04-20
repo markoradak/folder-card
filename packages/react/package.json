@@ -1,6 +1,6 @@
 {
   "name": "@markoradak/folder-card",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Animated folder-style card with FLIP spring expansion, 3D lid rotation, and render props API",
   "license": "MIT",
   "type": "module",
